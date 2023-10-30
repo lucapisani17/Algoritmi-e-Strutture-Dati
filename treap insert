@@ -1,0 +1,28 @@
+
+
+// Funzione ricorsiva per l'inserimento
+Node* treapInsert(Node* root, int key, int priority) {
+    if (root == NULL)
+        return createNode(key, priority);
+
+    if (key <= root->key) {
+        root->left = treapInsert(root->left, key, priority);
+        
+        // Rotazione a destra se la priorità del figlio sinistro è maggiore
+        if (root->left->priority > root->priority)
+            root = rightRotate(root);
+    } else {
+        root->right = treapInsert(root->right, key, priority);
+        
+        // Rotazione a sinistra se la priorità del figlio destro è maggiore
+        if (root->right->priority > root->priority)
+            root = leftRotate(root);
+    }
+
+    return root;
+}
+
+/*Avendo assunto che la prioritá sia stata assegnata in modo casuale, in un albero Treap la complessitá risulta pari ad O(log n) ma, 
+nei casi peggiori puó diventare O(n). Considerando il caso medio, con prioritá casuali, l'algoritmo ha una complessitá temporale di O(logn)
+perché segue un percorso verso la foglia corretta in base alla chiave e poiché in media l'altezza un albero Treap é O(logn), la complessitá dell'inserimento sará
+O(logn)
