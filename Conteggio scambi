@@ -1,0 +1,152 @@
+Si richiede di analizzare un particolare algoritmo di ordinamento. L'algoritmo elabora una sequenza di n interi distinti scambiando due elementi adiacenti finché la sequenza non viene ordinata in ordine crescente. 
+La lunghezza massima della sequenza di inputèn<500.000.Per la sequenza di input: 91054,l’algoritmo produce l'output01459.Bisogna determinare quante operazioni di scambio sono necessarie a quest’algoritmo per ordinare
+una determinata sequenza di input.Un modo alternativo di vedere è il problema è in termini di “inversioni”: in una sequenzaA, la coppia(i,j)èun’inversione se i<je Ai> Aj.Il problema consistenel trovare il conteggio
+delle inversioni.Attenzione: data la lunghezza massima della sequenza (500.000, eseguire l’algoritmo al fine di  contare  le  operazioni  di  scambio  richiederebbe  troppo  tempo: si  richiede  pertanto  di implementare
+una soluzione divide et impera per questo problema). Si alleghi al PDF un file editabile riportante l’implementazione in un linguaggio a scelta, corredato da almeno tre casi di test oltre quelli di esempio riportati di 
+seguito.Si riporti anchel’analisi di complessità.
+
+
+----------------------------------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Funzione di merge
+int merge(int arr[], int temp[], int left, int mid, int right) {
+    int i, j, k;
+    int scambi = 0;
+
+    i = left; 
+    j = mid + 1; 
+    k = left;
+
+    while ((i <= mid) && (j <= right)) {
+        if (arr[i] <= arr[j])
+            temp[k++] = arr[i++];
+        else {
+            temp[k++] = arr[j++];
+            scambi = scambi + (mid - i + 1);
+        }
+    }
+
+    while (i <= mid)
+        temp[k++] = arr[i++];
+
+    while (j <= right)
+        temp[k++] = arr[j++];
+
+    for (i = left; i <= right; i++)
+        arr[i] = temp[i];
+
+    return scambi;
+}
+
+// Funzione di merge sort
+int mergeSort(int arr[], int temp[], int left, int right) {
+    int scambi = 0;
+    if (right > left) {
+        int mid = (right + left) / 2;
+
+        scambi = mergeSort(arr, temp, left, mid);
+        scambi += mergeSort(arr, temp, mid + 1, right);
+
+        scambi += merge(arr, temp, left, mid, right);
+    }
+    return scambi;
+}
+
+int main() {
+    FILE* file = fopen("input.txt", "r"); // Apri il file in modalità di lettura
+
+    if (!file) {
+        fprintf(stderr, "Impossibile aprire il file input.txt\n");
+        return 1;
+    }
+
+    while (1) {
+        int n;
+        fscanf(file, "%d", &n);
+        if (n == 0) break;
+
+        int* arr = (int*)malloc(n * sizeof(int));
+        int* temp = (int*)malloc(n * sizeof(int));
+
+        for (int i = 0; i < n; i++) {
+            fscanf(file, "%d", &arr[i]);
+        }
+
+        printf("Array originale:\n");
+        for (int i = 0; i < n; i++) {
+            printf("%d ", arr[i]);
+        }
+
+        int scambi = mergeSort(arr, temp, 0, n - 1);
+
+        printf("\n\nArray ordinato:\n");
+        for (int i = 0; i < n; i++) {
+            printf("%d ", arr[i]);
+        }
+
+        printf("\nIl numero degli scambi effettuati per ordinare la sequenza è: %d\n", scambi);
+
+        free(arr);
+        free(temp);
+    }
+
+    fclose(file); // Chiudi il file dopo aver finito di leggere i dati
+
+    return 0;
+}
+/*
+
+ANALISI DELLA COMPLESSITÁ: nel caso peggiore il merge sort ha complessitá O(nlogn). La parte di i/o nel main é trascurabile rispetto alla complessitá di ordinamento (lineare rispetto al numero di elementi in input)
+
+DESCRIZIONE DELLA SOLUZIONE:
+la funzione merge prende in input un array, un array temporaneo e degli indici. Unisce due sottosequenze ordinate all'intern dell'array e durante tale processo tiene conto 
+degli scambi effettuati; 
+la funzione MergeSort effettua un ordinamento ricorsivo basato sul divide et impera. Eventualmente venie chiamato il punto medio e la funzione viene chiamata ricorsivamente sulle due metá. 
+Il risultato del merge viene accumulato nella variabile che restituirá il numero degli scambi effettuati;
+nel main si apre un loop infinito con while(1) che andrá ad interrompersi quando da tastiera si da in input 0 come lunghezza della sequenza come richiesto dal problema. 
+Se n é diverso da 0 si alloca la memoria per gli array, l'utente da in input i valori dell'array, viene chiamato il merge sort per poi stamparel'array originale, quello ordinato ed il numero di scambi 
+effettuati durante l'ordinamento. La memoria viene quindi deallocata.
+
+//casi di testda aggiungere ad un file di testo "input.txt"
+
+TEST CASE 1
+SAMPLE INPUT
+9
+5
+7
+3
+9
+8
+5
+6
+3
+5
+SAMPLE OUTPUT
+19
+
+TEST CASE 2
+SAMPLE INPUT
+7
+43
+56
+723
+6
+7
+33
+45
+SAMPLE OUTPUT
+11
+
+TEST CASE 3
+SAMPLE INPUT
+5
+11
+22
+33
+44
+55
+SAMPLE OUTPUT
+0
