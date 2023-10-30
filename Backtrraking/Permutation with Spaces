@@ -1,0 +1,68 @@
+Given a string you need to print all possible strings that can be made by placing spaces (zero or one) in between them. The output should be printed in sorted increasing order of strings
+
+Example 1:
+
+Input:
+S = "ABC"
+Output: (A B C)(A BC)(AB C)(ABC)
+Explanation:
+ABC
+AB C
+A BC
+A B C
+These are the possible combination of "ABC".
+ 
+
+Example 2:
+
+Input:
+S = "AB"
+Output: (A B)(AB)
+
+Your Task:  
+You don't need to read input or print anything. Your task is to complete the function permutation() which takes the string S as input parameters and returns the sorted array of the string denoting the different permutation (DON'T ADD '(' and ')' it will be handled by the driver code only).
+
+Expected Time Complexity: O(2^n)
+
+    ----------------------------------------------------------------------------------------------------------------
+
+
+class Solution{
+public:
+
+void generateStrings(string str, int index, string current, vector<string>& result) {
+    if (index == str.length()) {
+        result.push_back(current);
+        return;
+    }
+
+    // Case 1: Add space after current character
+    generateStrings(str, index + 1, current + " " + str[index], result);
+
+    // Case 2: Don't add space after current character
+    generateStrings(str, index + 1, current + str[index], result);
+}
+
+vector<string> permutation(string S) {
+    vector<string> result;
+    generateStrings(S, 0, "", result);
+    sort(result.begin(), result.end());
+    return result;
+}
+
+int main() {
+    string input1 = "ABC";
+    vector<string> result1 = permutation(input1);
+    for (string s : result1) {
+        cout << s << endl;
+    }
+
+    string input2 = "AB";
+    vector<string> result2 = permutation(input2);
+    for (string s : result2) {
+        cout << s << endl;
+    }
+
+    return 0;
+}
+};
