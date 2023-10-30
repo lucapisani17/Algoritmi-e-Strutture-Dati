@@ -1,0 +1,43 @@
+Given a sorted array arr[] of size N. Find the element that appears only once in the array. All other elements appear exactly twice. 
+
+Example 1:
+
+Input:
+N = 11
+arr[] = {1, 1, 2, 2, 3, 3, 4, 50, 50, 65, 65}
+Output: 4
+Explanation: 4 is the only element that 
+appears exactly once.
+ 
+
+Your Task:  
+You don't need to read input or print anything. Complete the function findOnce() which takes sorted array and its size as its input parameter and returns the element that appears only once. 
+
+
+Expected Time Complexity: O(log N)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class Solution
+{
+  public:
+int findOnce(int arr[], int N) {
+    int i = 0;
+    while (i < N) {
+        if (arr[i] != arr[i + 1]) {
+            return arr[i];
+        }
+        i += 2;
+    }
+    return -1; // This line should never be reached if input is valid
+}
+
+int main() {
+    int arr[] = {1, 1, 2, 2, 3, 3, 4, 50, 50, 65, 65};
+    int N = sizeof(arr) / sizeof(arr[0]);
+    int result = findOnce(arr, N);
+    cout << "Output: " << result << endl;
+
+    return 0;
+}
+};
