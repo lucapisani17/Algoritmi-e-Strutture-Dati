@@ -1,0 +1,72 @@
+Given two binary strings A and B that represent value of two integers, find the product of two strings in Decimal Value.
+
+ 
+
+Example 1:
+
+Input:
+A = "1100" , B = "01"
+Output:
+12
+Explanation:
+Decimal representation of A is 12 and
+that of B is 1. So, A*B gives the
+output 12.
+Example 2:
+
+Input:
+A = "01" , B = "01"
+Output:
+1
+Explanation:
+Decimal representation of both A and 
+B is 1. So, A*B gives the output 1.
+ 
+
+Your Task:
+You don't need to read input or print anything. Your task is to complete the function karatsubaAlgo() which takes Strings A and B as input and returns the answer.
+
+ 
+
+Expected Time Complexity: O(Length of Binary String)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+class Solution {
+  public:
+int binaryToDecimal(string binary) {
+    int decimal = 0;
+    int base = 1;
+    int length = binary.length();
+    
+    for (int i = length - 1; i >= 0; i--) {
+        if (binary[i] == '1') {
+            decimal += base;
+        }
+        base *= 2;
+    }
+    
+    return decimal;
+}
+
+int karatsubaAlgo(string A, string B) {
+    int decimalA = binaryToDecimal(A);
+    int decimalB = binaryToDecimal(B);
+    return decimalA * decimalB;
+}
+
+int main() {
+    string A1 = "1100";
+    string B1 = "01";
+    int result1 = karatsubaAlgo(A1, B1);
+    cout << "Output for example 1: " << result1 << endl;
+
+    string A2 = "01";
+    string B2 = "01";
+    int result2 = karatsubaAlgo(A2, B2);
+    cout << "Output for example 2: " << result2 << endl;
+
+    return 0;
+}
+In this code, the binaryToDecimal function converts a binary string to its decimal equivalent. The karatsubaAlgo function takes two binary strings A and B, converts them to decimal, multiplies them,
