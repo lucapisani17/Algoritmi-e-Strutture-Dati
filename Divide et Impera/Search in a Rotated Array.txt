@@ -1,0 +1,67 @@
+Given a sorted and rotated array A of N distinct elements which is rotated at some point, and given an element key. The task is to find the index of the given element key in the array A. The whole array A is given as the range to search.
+
+Example 1:
+
+Input:
+N = 9
+A[] = {5, 6, 7, 8, 9, 10, 1, 2, 3}
+key = 10
+l = 0 , h = 8
+Output:
+5
+Explanation: 10 is found at index 5.
+Example 2:
+
+Input:
+N = 4
+A[] = {3, 5, 1, 2}
+key = 6
+l = 0 , h = 3
+Output:
+-1
+Explanation: There is no element that has value 6.
+Your Task:
+Complete the function search() which takes an array arr[] and start, end index of the array and the K as input parameters, and returns the answer.
+
+Can you solve it in expected time complexity?
+
+Expected Time Complexity: O(log N).
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class Solution{
+    public:
+    int search(int A[], int l, int h, int key){
+    if (l > h)
+        return -1;
+ 
+    int mid = (l + h) / 2;
+    if (arr[mid] == key)
+        return mid;
+ 
+    if (arr[l] <= arr[mid]) {
+        if (key >= arr[l] && key <= arr[mid])
+            return search(arr, l, mid - 1, key);
+        return search(arr, mid + 1, h, key);
+    }
+ 
+    if (key >= arr[mid] && key <= arr[h])
+        return search(arr, mid + 1, h, key);
+    return search(arr, l, mid - 1, key);
+    }
+    int main() {
+    int arr1[] = {5, 6, 7, 8, 9, 10, 1, 2, 3};
+    int key1 = 10;
+    int N1 = sizeof(arr1) / sizeof(arr1[0]);
+    int result1 = search(arr1, 0, N1 - 1, key1);
+    cout << "Output for example 1: " << result1 << endl;
+
+    int arr2[] = {3, 5, 1, 2};
+    int key2 = 6;
+    int N2 = sizeof(arr2) / sizeof(arr2[0]);
+    int result2 = search(arr2, 0, N2 - 1, key2);
+    cout << "Output for example 2: " << result2 << endl;
+
+    return 0;
+}
+};
