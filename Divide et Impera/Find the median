@@ -1,0 +1,61 @@
+Given an array arr[] of N integers, calculate the median.
+
+NOTE: Return the floor value of the median.
+ 
+
+Example 1:
+
+Input: N = 5
+arr[] = 90 100 78 89 67
+Output: 89
+Explanation: After sorting the array 
+middle element is the median 
+
+Example 2:
+
+Input: N = 4
+arr[] = 56 67 30 79
+Output: 61
+Explanation: In case of even number of 
+elements, average of two middle elements 
+is the median.
+
+ 
+
+Your Task:
+You don't need to read or print anything. Your task is to complete the function find_median() which takes the array as input parameter and return the floor value of the median.
+ 
+
+Expected Time Complexity: O(n * log(n))
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+class Solution
+{
+public:
+	public:
+int find_median(int arr[], int N) {
+    sort(arr, arr + N);
+    
+    if (N % 2 == 1) {
+        return arr[N/2];
+    } else {
+        return (arr[N/2 - 1] + arr[N/2]) / 2;
+    }
+}
+
+int main() {
+    int arr1[] = {90, 100, 78, 89, 67};
+    int N1 = sizeof(arr1) / sizeof(arr1[0]);
+    int result1 = find_median(arr1, N1);
+    cout << "Output for example 1: " << result1 << endl;
+
+    int arr2[] = {56, 67, 30, 79};
+    int N2 = sizeof(arr2) / sizeof(arr2[0]);
+    int result2 = find_median(arr2, N2);
+    cout << "Output for example 2: " << result2 << endl;
+
+    return 0;
+}
+};
