@@ -1,0 +1,94 @@
+//TRACCIA - Given the head of a linked list, return the list after sorting it in ascending order.
+//APPROCCIO DIVIDE ET IMEPRA MERGE SORT- O(nlogn)
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definizione per la lista collegata
+struct ListNode {
+    int val;
+    struct ListNode* next;
+};
+
+struct ListNode* merge(struct ListNode* left, struct ListNode* right) {
+    struct ListNode dummy;
+    struct ListNode* tail = &dummy;
+    
+    while (left != NULL && right != NULL) {
+        if (left->val < right->val) {
+            tail->next = left;
+            left = left->next;
+        } else {
+            tail->next = right;
+            right = right->next;
+        }
+        tail = tail->next;
+    }
+
+    if (left != NULL) {
+        tail->next = left;
+    } else {
+        tail->next = right;
+    }
+
+    return dummy.next;
+}
+
+struct ListNode* findMiddle(struct ListNode* head) {
+    struct ListNode* slow = head;
+    struct ListNode* fast = head;
+    
+    while (fast != NULL && fast->next != NULL) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    
+    return slow;
+}
+
+struct ListNode* sortList(struct ListNode* head) {
+    if (head == NULL || head->next == NULL) {
+        return head;
+    }
+    
+    struct ListNode* mid = findMiddle(head);
+    struct ListNode* left = head;
+    struct ListNode* right = mid->next;
+    mid->next = NULL;
+    
+    left = sortList(left);
+    right = sortList(right);
+    
+    return merge(left, right);
+}
+
+void printList(struct ListNode* head) {
+    while (head != NULL) {
+        printf("%d ", head->val);
+        head = head->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    struct ListNode* head = (struct ListNode*)malloc(sizeof(struct ListNode));
+    head->val = 3;
+    head->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+    head->next->val = 1;
+    head->next->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+    head->next->next->val = 4;
+    head->next->next->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+    head->next->next->next->val = 2;
+    head->next->next->next->next = NULL;
+    
+    printf("Lista Originale: ");
+    printList(head);
+
+    head = sortList(head);
+
+    printf("Lista Ordinata: ");
+    printList(head);
+
+    return 0;
+}

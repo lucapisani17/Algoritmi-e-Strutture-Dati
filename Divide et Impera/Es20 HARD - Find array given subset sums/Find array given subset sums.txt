@@ -1,0 +1,58 @@
+Approccio divide et impera
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int countSetBits(int n) {
+    int count = 0;
+    while (n) {
+        count += n & 1;
+        n >>= 1;
+    }
+    return count;
+}
+
+void recoverHelper(int* sums, int start, int end, int* ans) {
+    if (start == end) {
+        int count_bits = countSetBits(sums[start]);
+        int estimated_value = sums[start] / count_bits;
+        ans[count_bits - 1] = estimated_value;
+        return;
+    }
+
+    int mid = (start + end) / 2;
+    recoverHelper(sums, start, mid, ans);
+    recoverHelper(sums, mid + 1, end, ans);
+}
+
+int* recoverUnknownArray(int n, int* sums, int sumsSize, int* returnSize) {
+    int* ans = (int*)malloc(sizeof(int) * n);
+    for (int i = 0; i < n; i++) {
+        ans[i] = 0;
+    }
+
+    recoverHelper(sums, 0, sumsSize - 1, ans);
+
+    *returnSize = n;
+    return ans;
+}
+
+int main() {
+    int n = 3;
+    int sums[] = {6, 7, 9};
+    int sumsSize = sizeof(sums) / sizeof(sums[0]);
+
+    int returnSize;
+    int* ans = recoverUnknownArray(n, sums, sumsSize, &returnSize);
+
+    printf("Recovered array: ");
+    for (int i = 0; i < returnSize; i++) {
+        printf("%d ", ans[i]);
+    }
+
+    free(ans);
+
+    return 0;
+}

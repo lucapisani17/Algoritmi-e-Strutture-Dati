@@ -1,0 +1,78 @@
+//compelssitá temporale? O(N!)
+
+#include <stdio.h>
+
+// Funzione di utilità per controllare se è sicuro posizionare una regina in una determinata posizione
+int isSafe(int board[][10], int row, int col, int N) {
+    int i, j;
+
+    // Controllo della riga
+    for (i = 0; i < col; i++) {
+        if (board[row][i])
+            return 0;
+    }
+
+    // Controllo dell'angolo superiore sinistro
+    for (i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+        if (board[i][j])
+            return 0;
+    }
+
+    // Controllo dell'angolo inferiore sinistro
+    for (i = row, j = col; j >= 0 && i < N; i++, j--) {
+        if (board[i][j])
+            return 0;
+    }
+
+    return 1;
+}
+
+// Funzione ricorsiva per trovare tutte le soluzioni
+int solveNQueensUtil(int board[][10], int col, int N) {
+    // Se tutte le regine sono posizionate, restituisce 1
+    if (col >= N)
+        return 1;
+
+    int res = 0;
+    int i;
+
+    for (i = 0; i < N; i++) {
+        if (isSafe(board, i, col, N)) {
+            // Posiziona la regina
+            board[i][col] = 1;
+
+            // Ricorsione per posizionare il resto delle regine
+            res += solveNQueensUtil(board, col + 1, N);
+
+            // Torna indietro e prova altre posizioni
+            board[i][col] = 0;
+        }
+    }
+
+    return res;
+}
+
+// Funzione principale per risolvere il problema delle N regine
+int solveNQueens(int N) {
+    int board[10][10] = {0};
+
+    return solveNQueensUtil(board, 0, N);
+}
+
+int main() {
+    int numTests, N;
+    printf("Inserisci il numero di casi di test: ");
+    scanf("%d", &numTests);
+
+    for (int i = 0; i < numTests; i++) {
+        printf("Caso di test #%d\n", i + 1);
+        printf("Inserisci il valore di N: ");
+        scanf("%d", &N);
+
+        int numSolutions = solveNQueens(N);
+
+        printf("Il numero di modi in cui è possibile posizionare %d regine è: %d\n", N, numSolutions);
+    }
+
+    return 0;
+}

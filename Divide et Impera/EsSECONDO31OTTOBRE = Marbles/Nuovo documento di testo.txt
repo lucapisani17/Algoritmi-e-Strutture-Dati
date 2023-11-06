@@ -1,0 +1,55 @@
+O(N ^2+NQ), dove 
+�
+N è il numero di marmi e 
+�
+Q è il numero di query per ogni caso di test
+
+#include <stdio.h>
+
+int main() {
+    int N, Q;
+    int caseCount = 0;
+
+    while (scanf("%d %d", &N, &Q) == 2 && (N != 0 || Q != 0)) {
+        caseCount++;
+        int marbles[N];
+
+        for (int i = 0; i < N; i++) {
+            scanf("%d", &marbles[i]);
+        }
+
+        printf("CASE# %d:\n", caseCount);
+
+        // Ordina l'array dei marmi
+        for (int i = 0; i < N - 1; i++) {
+            for (int j = 0; j < N - i - 1; j++) {
+                if (marbles[j] > marbles[j+1]) {
+                    int temp = marbles[j];
+                    marbles[j] = marbles[j+1];
+                    marbles[j+1] = temp;
+                }
+            }
+        }
+
+        for (int i = 0; i < Q; i++) {
+            int query;
+            scanf("%d", &query);
+
+            int position = -1;
+            for (int j = 0; j < N; j++) {
+                if (marbles[j] == query) {
+                    position = j + 1;
+                    break;
+                }
+            }
+
+            if (position != -1) {
+                printf("%d found at %d\n", query, position);
+            } else {
+                printf("%d not found\n", query);
+            }
+        }
+    }
+
+    return 0;
+}

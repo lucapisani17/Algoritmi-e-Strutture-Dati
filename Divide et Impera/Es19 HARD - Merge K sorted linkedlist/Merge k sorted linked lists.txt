@@ -1,0 +1,48 @@
+// APPROCCIO DIVIDE ET CONQUISTA
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definition for singly-linked list.
+struct ListNode {
+    int val;
+    struct ListNode *next;
+};
+
+struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
+    if (!l1) return l2;
+    if (!l2) return l1;
+
+    if (l1->val < l2->val) {
+        l1->next = mergeTwoLists(l1->next, l2);
+        return l1;
+    } else {
+        l2->next = mergeTwoLists(l1, l2->next);
+        return l2;
+    }
+}
+
+struct ListNode* mergeKLists(struct ListNode** lists, int listsSize) {
+    if (listsSize == 0) return NULL;
+    if (listsSize == 1) return lists[0];
+    if (listsSize == 2) return mergeTwoLists(lists[0], lists[1]);
+
+    int mid = listsSize / 2;
+    struct ListNode* left = mergeKLists(lists, mid);
+    struct ListNode* right = mergeKLists(lists + mid, listsSize - mid);
+
+    return mergeTwoLists(left, right);
+}
+
+// Example Usage
+int main() {
+    // Assuming you have linked lists like:
+    // struct ListNode* list1 = createList(1, createList(4, createList(5, NULL)));
+    // struct ListNode* list2 = createList(1, createList(3, createList(4, NULL)));
+    // struct ListNode* list3 = createList(2, createList(6, NULL));
+
+    // Merge the lists
+    // struct ListNode* result = mergeKLists((struct ListNode*[]){list1, list2, list3}, 3);
+    
+    return 0;
+}

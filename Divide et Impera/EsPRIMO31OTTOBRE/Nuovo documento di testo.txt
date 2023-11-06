@@ -1,0 +1,33 @@
+
+O(llog2(I))
+
+#include <stdio.h>
+#include <math.h>
+
+int findStopPosition(int depth, int ballNumber) {
+    if (depth == 1) {
+        return 1;
+    }
+
+    int halfway = pow(2, depth - 1);
+    if (ballNumber <= halfway) {
+        return 2 * findStopPosition(depth - 1, ballNumber);
+    } else {
+        return 2 * findStopPosition(depth - 1, ballNumber - halfway) + 1;
+    }
+}
+
+int main() {
+    int numTestCases;
+    scanf("%d", &numTestCases);
+
+    for (int i = 0; i < numTestCases; i++) {
+        int depth, ballNumber;
+        scanf("%d %d", &depth, &ballNumber);
+
+        int stopPosition = findStopPosition(depth, ballNumber);
+        printf("%d\n", stopPosition);
+    }
+
+    return 0;
+}

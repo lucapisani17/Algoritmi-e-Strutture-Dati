@@ -1,0 +1,126 @@
+// FATTO TUTTO DA SOLOOO GODO
+//APPROCCIO DIVIDE ET IMPERA SOTTO complessitá  O(n), ma nel caso peggiore, potrebbe richiedere O(n^2) operazioni.
+//TRACCIA = Given an integer array nums and an integer k, return the kth largest element in the array.
+Note that it is the kth largest element in the sorted order, not the kth distinct element.
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int findKthLargest(int* nums, int numsSize, int k){
+//trovo il piú grande nellá rray. Confronto gli altri con il piú grande  e incremento un contatore che quando é pari a k mi ritorna il valore corrispondente all 'elemento nell array
+int contatore;
+for(int i=0; i<numsSize; i++){
+    for(int j=0; j<numsSize; j++){
+        if (nums[i]<=nums[j] ){
+            contatore++;
+        }
+    }
+    if (contatore == k){
+        return nums[i];
+    }
+    else {
+        contatore = 0;
+    }
+}
+}
+
+int main (){
+    int n;
+    int k;
+    int largest_element;
+    printf("Inserisci la dimensione dell'array: ");
+    scanf("%d", &n);
+
+
+    // Creazione di un array di interi di dimensione n
+    int array[n];
+
+    //riempio l'array
+    for(int i=0; i<n; i++){
+        printf("Inserisci un elemento nell'array: ");
+                if (scanf("%d", &array[i]) != 1) {
+                printf("Errore durante la lettura dell'input.\n");
+                return 1;
+        }
+    }
+
+    printf("Inserisci k pari al k-esesimo elemento piú grande che vuoi trovare: ");
+    scanf("%d", &k);
+
+    largest_element = findKthLargest(array, n, k);
+    
+     printf("il k-esesimo elemento piú grande é: %d.\n", largest_element);
+    
+    return 0;
+}
+
+--------------------DIVIDE ET IMPERA(QUICK)-------------------
+#include <stdio.h>
+
+int partition(int* nums, int left, int right) {
+    int pivot = nums[right];
+    int i = left - 1;
+
+    for (int j = left; j < right; j++) {
+        if (nums[j] >= pivot) {
+            i++;
+            int temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
+        }
+    }
+
+    int temp = nums[i + 1];
+    nums[i + 1] = nums[right];
+    nums[right] = temp;
+
+    return i + 1;
+}
+
+int findKthLargest(int* nums, int left, int right, int k) {
+    if (left <= right) {
+        int pivotIndex = partition(nums, left, right);
+
+        if (pivotIndex == k - 1) {
+            return nums[pivotIndex];
+        } else if (pivotIndex < k - 1) {
+            return findKthLargest(nums, pivotIndex + 1, right, k);
+        } else {
+            return findKthLargest(nums, left, pivotIndex - 1, k);
+        }
+    }
+
+    return -1; // In caso di errore
+}
+
+int main() {
+    int n;
+    int k;
+
+    printf("Inserisci la dimensione dell'array: ");
+    scanf("%d", &n);
+
+    int array[n];
+    for(int i = 0; i < n; i++) {
+        printf("Inserisci un elemento nell'array: ");
+        if (scanf("%d", &array[i]) != 1) {
+            printf("Errore durante la lettura dell'input.\n");
+            return 1;
+        }
+    }
+
+    printf("Inserisci k (il k-esimo elemento più grande che vuoi trovare): ");
+    scanf("%d", &k);
+
+    int largest_element = findKthLargest(array, 0, n - 1, k);
+
+    if (largest_element != -1) {
+        printf("Il k-esimo elemento più grande è: %d.\n", largest_element);
+    } else {
+        printf("Errore durante il calcolo.\n");
+    }
+
+    return 0;
+}
+

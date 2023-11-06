@@ -1,0 +1,59 @@
+//TRACCIA = Write an efficient algorithm that searches for a value target in an m x n integer matrix matrix. This matrix has the following properties:
+
+Integers in each row are sorted in ascending from left to right.
+Integers in each column are sorted in ascending from top to bottom.
+
+//APPROCCIO DIVIDE ET IMPERA SOTTO complessitá  O(log(m) + log(n))
+
+
+#include <stdio.h>
+#include <stdbool.h>
+
+bool searchMatrix(int** matrix, int matrixSize, int* matrixColSize, int target) {
+    if (matrixSize == 0 || *matrixColSize == 0) {
+        return false;
+    }
+
+    int row = 0;
+    int col = *matrixColSize - 1;
+
+    while (row < matrixSize && col >= 0) {
+        if (matrix[row][col] == target) {
+            return true;
+        } else if (matrix[row][col] < target) {
+            row++;
+        } else {
+            col--;
+        }
+    }
+
+    return false;
+}
+
+---------------------------------DIVIDE ET IMPERA ------------- 
+int searchMatrixRecursive(int** matrix, int startRow, int endRow, int startCol, int endCol, int target) {
+    if (startRow > endRow || startCol > endCol) {
+        return 0;
+    }
+
+    int midRow = (startRow + endRow) / 2;
+    int midCol = (startCol + endCol) / 2;
+
+    if (matrix[midRow][midCol] == target) {
+        return 1;
+    } else if (matrix[midRow][midCol] < target) {
+        return searchMatrixRecursive(matrix, startRow, midRow, midCol + 1, endCol, target) ||
+               searchMatrixRecursive(matrix, midRow + 1, endRow, startCol, midCol, target);
+    } else {
+        return searchMatrixRecursive(matrix, startRow, midRow - 1, startCol, endCol, target) ||
+               searchMatrixRecursive(matrix, midRow, endRow, startCol, midCol - 1, target);
+    }
+}
+
+int searchMatrix(int** matrix, int matrixSize, int* matrixColSize, int target) {
+    if (matrixSize == 0 || *matrixColSize == 0) {
+        return 0;
+    }
+
+    return searchMatrixRecursive(matrix, 0, matrixSize - 1, 0, *matrixColSize - 1, target);
+}

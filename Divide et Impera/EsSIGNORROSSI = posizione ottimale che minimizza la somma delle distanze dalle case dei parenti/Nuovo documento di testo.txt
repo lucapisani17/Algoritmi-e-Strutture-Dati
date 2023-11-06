@@ -1,0 +1,62 @@
+complessitá O(nlogn)
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Funzione per calcolare la somma delle distanze minime
+int minDistanceSum(int relatives[], int start, int end) {
+    if (start >= end) {
+        return 0;
+    }
+
+    int mid = (start + end) / 2;
+
+    // Trova la mediana dei parenti
+    int median = relatives[mid];
+
+    // Calcola la somma delle distanze
+    int sum = 0;
+    for (int i = start; i <= end; i++) {
+        sum += abs(relatives[i] - median);
+    }
+
+    // Dividi il problema in due sottoarray e somma le distanze
+    int leftSum = minDistanceSum(relatives, start, mid - 1);
+    int rightSum = minDistanceSum(relatives, mid + 1, end);
+
+    return sum + leftSum + rightSum;
+}
+
+int main() {
+    int numTests;
+    scanf("%d", &numTests);
+
+    for (int t = 0; t < numTests; t++) {
+        int numRelatives;
+        scanf("%d", &numRelatives);
+
+        int relatives[numRelatives];
+        for (int i = 0; i < numRelatives; i++) {
+            scanf("%d", &relatives[i]);
+        }
+
+        // Ordina l'array dei parenti
+        for (int i = 0; i < numRelatives - 1; i++) {
+            for (int j = 0; j < numRelatives - i - 1; j++) {
+                if (relatives[j] > relatives[j+1]) {
+                    int temp = relatives[j];
+                    relatives[j] = relatives[j+1];
+                    relatives[j+1] = temp;
+                }
+            }
+        }
+
+        // Calcola la somma delle distanze minime
+        int minSum = minDistanceSum(relatives, 0, numRelatives - 1);
+
+        printf("%d\n", minSum);
+    }
+
+    return 0;
+}

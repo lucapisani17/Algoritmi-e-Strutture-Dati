@@ -1,0 +1,66 @@
+approccio divide et impera
+
+#include <stdio.h>
+
+int merge(int* nums, int left, int mid, int right) {
+    int count = 0;
+
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    int L[n1], R[n2];
+
+    for (int i = 0; i < n1; i++)
+        L[i] = nums[left + i];
+    for (int i = 0; i < n2; i++)
+        R[i] = nums[mid + 1 + i];
+
+    int i = 0, j = 0, k = left;
+
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            nums[k++] = L[i++];
+        } else {
+            nums[k++] = R[j++];
+            count += n1 - i;
+        }
+    }
+
+    while (i < n1) {
+        nums[k++] = L[i++];
+    }
+
+    while (j < n2) {
+        nums[k++] = R[j++];
+    }
+
+    return count;
+}
+
+int mergeSort(int* nums, int left, int right) {
+    int count = 0;
+
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        count += mergeSort(nums, left, mid);
+        count += mergeSort(nums, mid + 1, right);
+        count += merge(nums, left, mid, right);
+    }
+
+    return count;
+}
+
+int reversePairs(int* nums, int numsSize) {
+    return mergeSort(nums, 0, numsSize - 1);
+}
+
+int main() {
+    int nums[] = {1, 3, 2, 3, 1};
+    int numsSize = sizeof(nums) / sizeof(nums[0]);
+
+    int result = reversePairs(nums, numsSize);
+
+    printf("Number of reverse pairs: %d\n", result);
+
+    return 0;
+}

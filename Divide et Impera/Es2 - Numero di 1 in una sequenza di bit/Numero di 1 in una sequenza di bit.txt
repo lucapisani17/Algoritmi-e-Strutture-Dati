@@ -1,0 +1,90 @@
+APPROCCIO DIVIDE ET IMPERA SOTTO O(n)
+
+
+
+//prende in input una stringa e conta il numero di 1 che ha
+//DIFFICOLTÁ DEL CODICE: PASSAGGIO DEI PARAMETRI DAL MAIN ALLA FUNZIONE. DA RIVEDERE E COMMERCIALE E ASTERISCO
+
+//TRACCIA = Write a function that takes the binary representation of an unsigned integer and returns the number of '1' bits it has (also known as the Hamming weight).
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
+
+int onecounter(int array[],int dimensione,int contatore){
+    for (int i=0; i<dimensione; i++){
+        if (array[i]==1){
+            contatore++;
+        }
+        
+    }
+    return contatore;
+} 
+
+int main(){
+    int counter = 0;
+    int n;
+    printf("Inserisci la dimensione dell'array: ");
+    scanf("%d", &n);
+
+    // Creazione di un array di interi di dimensione n
+    int array[n];
+
+    //riempio l'array
+    for(int i=0; i<n; i++){
+        printf("Inserisci un elemento nell'array: ");
+                if (scanf("%d", &array[i]) != 1) {
+                printf("Errore durante la lettura dell'input.\n");
+                return 1;
+        }
+    }
+
+    counter=onecounter(array,n,counter);
+
+    printf("Il numero di '1' nela sequenza é: %d\n", counter);
+return 0;
+}
+
+---------------------------APPROCCIO DIVIDE ET IMPERA---------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+int onecounter_recursive(int array[], int start, int end) {
+    if (start > end) {
+        return 0;
+    }
+
+    if (start == end) {
+        return (array[start] == 1) ? 1 : 0;
+    }
+
+    int mid = (start + end) / 2;
+
+    int left_count = onecounter_recursive(array, start, mid);
+    int right_count = onecounter_recursive(array, mid + 1, end);
+
+    return left_count + right_count;
+}
+
+int main() {
+    int n;
+    printf("Inserisci la dimensione dell'array: ");
+    scanf("%d", &n);
+
+    int array[n];
+    for(int i = 0; i < n; i++) {
+        printf("Inserisci un elemento nell'array: ");
+        if (scanf("%d", &array[i]) != 1) {
+            printf("Errore durante la lettura dell'input.\n");
+            return 1;
+        }
+    }
+
+    int count = onecounter_recursive(array, 0, n - 1);
+
+    printf("Il numero di '1' nella sequenza è: %d\n", count);
+
+    return 0;
+}
+

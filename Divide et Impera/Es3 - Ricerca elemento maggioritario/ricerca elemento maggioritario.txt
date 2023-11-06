@@ -1,0 +1,147 @@
+//APPROCCIO DIVIDE ET IMPERA SOTTO complessitá O(n log n).
+
+//TRACCIA = Given an array nums of size n, return the majority element.
+
+The majority element is the element that appears more than ⌊n / 2⌋ times. You may assume that the majority element always exists in the array.
+
+//DIFFICOLTÁ DELL ESERCIZIO = AVEVO SCELTO UN APPROCCIO NON EFFICIENTE. HA APPLICATO L ALGORITMO DI BOYERMOORE
+
+#include <stdio.h>
+
+int majorityelement(int array[], int dim) {
+    int maxCount = 0;
+    int majorElement = -1;
+
+    for (int i = 0; i < dim; i++) {
+        int count = 0;
+
+        for (int j = 0; j < dim; j++) {
+            if (array[i] == array[j]) {
+                count++;
+            }
+        }
+
+        if (count > maxCount) {
+            maxCount = count;
+            majorElement = array[i];
+        }
+    }
+
+    return majorElement;
+}
+
+int main() {
+    int n = 10;
+    int array[n];
+
+    // Inserimento dei valori nell'array
+    for (int i = 0; i < n; i++) {
+        printf("Inserisci un elemento nell'array: ");
+        scanf("%d", &array[i]);
+    }
+
+    int elemento;
+
+    elemento = majorityelement(array, n);
+
+    if (elemento != -1) {
+        printf("L'elemento maggioritario nella sequenza è: %d\n", elemento);
+    } else {
+        printf("Nessun elemento maggioritario trovato.\n");
+    }
+
+    return 0;
+}
+
+-------------DIVIDE ET IMPERA-------------------
+
+#include <stdio.h>
+
+int find_candidate(int array[], int dim) {
+    int count = 1;
+    int candidate = array[0];
+
+    for (int i = 1; i < dim; i++) {
+        if (array[i] == candidate) {
+            count++;
+        } else {
+            count--;
+        }
+
+        if (count == 0) {
+            candidate = array[i];
+            count = 1;
+        }
+    }
+
+    return candidate;
+}
+
+int is_majority(int array[], int dim, int candidate) {
+    int count = 0;
+
+    for (int i = 0; i < dim; i++) {
+        if (array[i] == candidate) {
+            count++;
+        }
+    }
+
+    return (count > dim / 2);
+}
+
+int majority_element_divide_and_conquer(int array[], int start, int end) {
+    if (start == end) {
+        return array[start];
+    }
+
+    int mid = (start + end) / 2;
+
+    int left_majority = majority_element_divide_and_conquer(array, start, mid);
+    int right_majority = majority_element_divide_and_conquer(array, mid + 1, end);
+
+    if (left_majority == right_majority) {
+        return left_majority;
+    }
+
+    int left_majority_count = is_majority(array, end - start + 1, left_majority);
+    int right_majority_count = is_majority(array, end - start + 1, right_majority);
+
+    if (left_majority_count > (end - start + 1) / 2) {
+        return left_majority;
+    }
+
+    if (right_majority_count > (end - start + 1) / 2) {
+        return right_majority;
+    }
+
+    return -1; // Nessun elemento maggioritario
+}
+
+int main() {
+    int n = 10;
+    int array[n];
+
+    // Inserimento dei valori nell'array
+    for (int i = 0; i < n; i++) {
+        printf("Inserisci un elemento nell'array: ");
+        scanf("%d", &array[i]);
+    }
+
+    int candidate = find_candidate(array, n);
+    int elemento;
+
+    if (is_majority(array, n, candidate)) {
+        elemento = candidate;
+    } else {
+        elemento = majority_element_divide_and_conquer(array, 0, n - 1);
+    }
+
+    if (elemento != -1) {
+        printf("L'elemento maggioritario nella sequenza è: %d\n", elemento);
+    } else {
+        printf("Nessun elemento maggioritario trovato.\n");
+    }
+
+    return 0;
+}
+

@@ -1,0 +1,82 @@
+APPROCCIO DIVIDE ET IMPERA complessitá O(log n)
+
+TRACCIA = Given a n * n matrix grid of 0's and 1's only. We want to represent grid with a Quad-Tree.
+
+Return the root of the Quad-Tree representing grid.
+
+A Quad-Tree is a tree data structure in which each internal node has exactly four children. Besides, each node has two attributes:
+
+val: True if the node represents a grid of 1's or False if the node represents a grid of 0's. Notice that you can assign the val to True or False when isLeaf is False, and both are accepted in the answer.
+isLeaf: True if the node is a leaf node on the tree or False if the node has four children.
+
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+// Definition for a Quad-Tree node
+struct Node {
+    bool val;
+    bool isLeaf;
+    struct Node* topLeft;
+    struct Node* topRight;
+    struct Node* bottomLeft;
+    struct Node* bottomRight;
+};
+
+// Function to create a new Quad-Tree node
+struct Node* newNode(bool val, bool isLeaf, struct Node* topLeft, struct Node* topRight, struct Node* bottomLeft, struct Node* bottomRight) {
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->val = val;
+    node->isLeaf = isLeaf;
+    node->topLeft = topLeft;
+    node->topRight = topRight;
+    node->bottomLeft = bottomLeft;
+    node->bottomRight = bottomRight;
+    return node;
+}
+
+struct Node* construct(int** grid, int gridSize, int* gridColSize) {
+    return constructQuadTree(grid, 0, 0, gridSize, 0, gridColSize[0]);
+}
+
+struct Node* constructQuadTree(int** grid, int x, int y, int size, int offsetX, int offsetY) {
+    if (size == 1) {
+        return newNode(grid[x][y] == 1, true, NULL, NULL, NULL, NULL);
+    }
+
+    int newSize = size / 2;
+
+    struct Node* topLeft = constructQuadTree(grid, x, y, newSize, offsetX, offsetY);
+    struct Node* topRight = constructQuadTree(grid, x, y + newSize, newSize, offsetX, offsetY);
+    struct Node* bottomLeft = constructQuadTree(grid, x + newSize, y, newSize, offsetX, offsetY);
+    struct Node* bottomRight = constructQuadTree(grid, x + newSize, y + newSize, newSize, offsetX, offsetY);
+
+    bool isLeaf = false;
+    if (topLeft->isLeaf && topRight->isLeaf && bottomLeft->isLeaf && bottomRight->isLeaf) {
+        if (topLeft->val == topRight->val && topRight->val == bottomLeft->val && bottomLeft->val == bottomRight->val) {
+            isLeaf = true;
+        }
+    }
+
+    if (isLeaf) {
+        return newNode(topLeft->val, true, NULL, NULL, NULL, NULL);
+    } else {
+        return newNode(true, false, topLeft, topRight, bottomLeft, bottomRight);
+    }
+}
+
+int main() {
+    int gridSize = 4;
+    int gridColSize[] = {4, 4};
+    int grid[4][4] = {{1, 1, 0, 0},
+                     {1, 1, 0, 0},
+                     {0, 0, 1, 1},
+                     {0, 0, 1, 1}};
+
+    struct Node* root = construct((int**)grid, gridSize, gridColSize);
+
+    // You can now use the 'root' node to represent the Quad-Tree
+
+    return 0;
+}

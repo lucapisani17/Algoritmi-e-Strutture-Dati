@@ -1,0 +1,70 @@
+//APPROCCIO DIVIDE ET IMPERA complessitá O(n^2) nel caso peggiore e O(n log n) nel caso medio (dipende se gli elementi dell array sono messi casualmente)
+
+//TRACCIA = You are given an integer array nums with no duplicates. A maximum binary tree can be built recursively from nums using the following algorithm:
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definizione della struttura del nodo dell'albero
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+};
+
+// Funzione per creare un nuovo nodo
+struct TreeNode* newNode(int val) {
+    struct TreeNode* node = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    node->val = val;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+
+// Funzione per trovare l'indice del massimo in un sottoarray
+int findMaxIndex(int nums[], int start, int end) {
+    int maxIndex = start;
+    for (int i = start + 1; i <= end; i++) {
+        if (nums[i] > nums[maxIndex])
+            maxIndex = i;
+    }
+    return maxIndex;
+}
+
+// Funzione ricorsiva per costruire l'albero massimo
+struct TreeNode* constructMaximumBinaryTree(int nums[], int start, int end) {
+    if (start > end)
+        return NULL;
+    //mi trovo il max inex cioé l'elemento piú grande dell array con la funzione scritta sopra e lo uso per creare la radice attraverso la funzione di creazione del nodo
+    int maxIndex = findMaxIndex(nums, start, end);
+    struct TreeNode* root = newNode(nums[maxIndex]);
+
+    // Avendo adesso un nuovo nodo radice che da struct ha un valore e un left e right nulli, procedo a richiamare ricorsivamente la funzione a destra e sinistra per costruire i due sottoalberi
+    root->left = constructMaximumBinaryTree(nums, start, maxIndex - 1);
+    root->right = constructMaximumBinaryTree(nums, maxIndex + 1, end);
+
+    return root;
+}
+// Funzione per stampare l'albero (pre-order traversal)
+void printTree(struct TreeNode* node) {
+    if (node == NULL)
+        return;
+
+    printf("%d ", node->val);
+
+    printTree(node->left);
+    printTree(node->right);
+}
+
+int main() {
+    int nums[] = {3, 2, 1, 6, 0, 5};
+    int size = sizeof(nums) / sizeof(nums[0]);
+
+    struct TreeNode* root = constructMaximumBinaryTree(nums, 0, size - 1);
+
+    printTree(root);
+
+    return 0;
+}
