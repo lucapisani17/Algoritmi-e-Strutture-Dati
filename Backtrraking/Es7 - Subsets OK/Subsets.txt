@@ -1,0 +1,68 @@
+Complessitá O(2^n)
+Given an integer array nums of unique elements, return all possible 
+subsets
+ (the power set).
+
+The solution set must not contain duplicate subsets. Return the solution in any order.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+void backtrack(int* nums, int numsSize, int start, int* path, int pathSize, int** result, int* resultSize, int** resultColSize) {
+    // Aggiungiamo il percorso corrente al risultato
+    (*result)[*resultSize] = (int*)malloc(pathSize * sizeof(int));
+    (*resultColSize)[*resultSize] = pathSize;
+    for (int i = 0; i < pathSize; i++) {
+        (*result)[*resultSize][i] = path[i];
+    }
+    (*resultSize)++;
+
+    for (int i = start; i < numsSize; i++) {
+        path[pathSize] = nums[i]; // Aggiungiamo l'elemento corrente al percorso
+        backtrack(nums, numsSize, i + 1, path, pathSize + 1, result, resultSize, resultColSize); // Chiamata ricorsiva per esplorare il prossimo elemento
+    }
+}
+
+int** subsets(int* nums, int numsSize, int* returnSize, int** returnColumnSizes) {
+    // Allochiamo la memoria per contenere i risultati
+    int** result = (int**)malloc(1 * sizeof(int*));
+    int* resultColSize = (int*)malloc(1 * sizeof(int));
+    *returnSize = 0;
+
+    int* path = (int*)malloc(numsSize * sizeof(int)); // Allochiamo la memoria per contenere il percorso corrente
+
+    backtrack(nums, numsSize, 0, path, 0, &result, returnSize, &resultColSize); // Chiamata iniziale alla funzione di backtracking
+
+    free(path); // Liberiamo la memoria allocata per il percorso
+
+    // Ridimensioniamo i risultati al giusto numero di subset
+    result = (int**)realloc(result, (*returnSize) * sizeof(int*));
+    resultColSize = (int*)realloc(resultColSize, (*returnSize) * sizeof(int));
+
+    *returnColumnSizes = resultColSize; // Assegnamo il puntatore alle dimensioni delle colonne
+
+    return result; // Restituiamo i risultati trovati
+}
+
+int main() {
+    int nums[] = {1, 2, 3};
+    int numsSize = 3;
+    int returnSize;
+    int* returnColumnSizes;
+
+    int** result = subsets(nums, numsSize, &returnSize, &returnColumnSizes);
+
+    printf("Output:\n");
+    for (int i = 0; i < returnSize; i++) {
+        for (int j = 0; j < returnColumnSizes[i]; j++) {
+            printf("%d ", result[i][j]);
+        }
+        printf("\n");
+        free(result[i]);
+    }
+
+    free(result);
+    free(returnColumnSizes);
+
+    return 0;
+}

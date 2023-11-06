@@ -1,0 +1,52 @@
+complessitá O(1)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+void generateTimes(int turnedOn, int* hours, int* minutes, int hour, int minute, int index, char** result, int* resultSize) {
+    if (turnedOn == 0) {
+        char* time = (char*)malloc(6 * sizeof(char));
+        snprintf(time, 6, "%d:%02d", hour, minute);
+        result[*resultSize] = time;
+        (*resultSize)++;
+        return;
+    }
+
+    for (int i = index; i < 10; i++) {
+        if (i < 4 && (hour & (1 << i)) == 0) {
+            generateTimes(turnedOn - 1, hours, minutes, hour | (1 << i), minute, i + 1, result, resultSize);
+        } else if (i >= 4 && (minute & (1 << (i - 4))) == 0) {
+            generateTimes(turnedOn - 1, hours, minutes, hour, minute | (1 << (i - 4)), i + 1, result, resultSize);
+        }
+    }
+}
+
+char** readBinaryWatch(int turnedOn, int* returnSize) {
+    int* hours = (int*)malloc(4 * sizeof(int));
+    int* minutes = (int*)malloc(6 * sizeof(int));
+    char** result = (char**)malloc(1024 * sizeof(char*));
+    *returnSize = 0;
+
+    generateTimes(turnedOn, hours, minutes, 0, 0, 0, result, returnSize);
+
+    free(hours);
+    free(minutes);
+
+    return result;
+}
+
+int main() {
+    int turnedOn = 1;
+    int returnSize;
+    char** result = readBinaryWatch(turnedOn, &returnSize);
+
+    printf("Output:\n");
+    for (int i = 0; i < returnSize; i++) {
+        printf("%s\n", result[i]);
+        free(result[i]);
+    }
+
+    free(result);
+
+    return 0;
+}

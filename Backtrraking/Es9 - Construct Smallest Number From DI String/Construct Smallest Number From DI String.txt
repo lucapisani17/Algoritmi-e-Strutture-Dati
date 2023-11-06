@@ -1,0 +1,53 @@
+Construct Smallest Number From DI String
+
+Complessitá O(n!)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+void backtrack(char* pattern, int n, int* used, char* num, int numSize, char** result) {
+    if (numSize == n + 1) {
+        *result = (char*)malloc((n + 2) * sizeof(char)); // Allocazione di memoria per il risultato
+        for (int i = 0; i < n + 1; i++) {
+            (*result)[i] = num[i];
+        }
+        (*result)[n + 1] = '\0'; // Aggiungiamo il terminatore di stringa
+        return;
+    }
+
+    for (int i = 0; i <= 9; i++) {
+        if (!used[i]) {
+            if (numSize == 0 || (pattern[numSize - 1] == 'I' && i > (num[numSize - 1] - '0')) || (pattern[numSize - 1] == 'D' && i < (num[numSize - 1] - '0'))) {
+                used[i] = 1; // Contrassegniamo il numero come utilizzato
+                num[numSize] = '0' + i; // Aggiungiamo il numero alla stringa num
+                backtrack(pattern, n, used, num, numSize + 1, result); // Chiamata ricorsiva per esplorare il prossimo numero
+                used[i] = 0; // Ripristiniamo il numero come non utilizzato
+            }
+        }
+    }
+}
+
+char* findLexSmallestString(char* pattern) {
+    int n = strlen(pattern);
+    char* num = (char*)malloc((n + 1) * sizeof(char)); // Allocazione di memoria per la stringa num
+    int* used = (int*)calloc(10, sizeof(int)); // Allocazione di memoria per tenere traccia dei numeri utilizzati
+    char* result;
+
+    backtrack(pattern, n, used, num, 0, &result); // Chiamata iniziale alla funzione di backtracking
+
+    free(num); // Liberiamo la memoria allocata per num
+    free(used); // Liberiamo la memoria allocata per used
+
+    return result; // Restituiamo il risultato
+}
+
+int main() {
+    char pattern[] = "IDID";
+    char* result = findLexSmallestString(pattern);
+
+    printf("Output: %s\n", result);
+
+    free(result); // Liberiamo la memoria allocata per il risultato
+
+    return 0;
+}

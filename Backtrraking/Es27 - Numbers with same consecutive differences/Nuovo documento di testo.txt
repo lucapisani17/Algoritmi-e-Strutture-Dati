@@ -1,0 +1,76 @@
+piegazione del codice:
+
+La funzione generateNumbers è la funzione ricorsiva principale che genera i numeri con la differenza tra le cifre pari a k.
+
+Nel main, viene chiamata la funzione numsSameConsecDiff con i parametri n e k. Questa funzione gestisce l'allocazione della memoria e la pulizia finale.
+
+La complessità temporale di questo algoritmo dipende principalmente da quanti numeri soddisfano le condizioni specificate. Nel caso peggiore, l'algoritmo può generare tutti i numeri con n cifre, il che comporterebbe una complessità di O(10^n). Tuttavia, in pratica, il numero di risultati può essere molto inferiore a questa cifra massima, quindi la complessità effettiva sarà inferiore.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Funzione ricorsiva per generare numeri con la differenza tra le cifre pari a k
+void generateNumbers(int n, int k, int num, int* result, int index) {
+    if (index == n) {
+        // Se abbiamo generato un numero di lunghezza n, lo aggiungiamo al risultato
+        result[num] = 1;
+        return;
+    }
+
+    // Calcoliamo le possibili cifre successive basate su k
+    int nextDigits[2] = {num % 10 + k, num % 10 - k};
+
+    for (int i = 0; i < 2; i++) {
+        if (nextDigits[i] >= 0 && nextDigits[i] <= 9) {
+            // Se la cifra è valida, la aggiungiamo al numero e chiamiamo ricorsivamente
+            generateNumbers(n, k, num * 10 + nextDigits[i], result, index + 1);
+        }
+    }
+}
+
+int* numsSameConsecDiff(int n, int k, int* returnSize) {
+    // Calcoliamo il numero massimo di numeri possibili
+    int maxNums = 1;
+    for (int i = 1; i < n; i++) {
+        maxNums *= 10;
+    }
+
+    // Allocazione dinamica di memoria per l'array di risultati
+    int* result = (int*)malloc(maxNums * sizeof(int));
+    *returnSize = 0;
+
+    // Generiamo i numeri utilizzando la funzione di backtracking
+    generateNumbers(n, k, 0, result, 0);
+
+    // Creiamo un array di risultati finali senza i valori non generati
+    int* finalResult = (int*)malloc(*returnSize * sizeof(int));
+    int index = 0;
+    for (int i = 0; i < maxNums; i++) {
+        if (result[i] == 1) {
+            finalResult[index++] = i;
+        }
+    }
+
+    // Liberiamo la memoria dell'array temporaneo
+    free(result);
+
+    return finalResult;
+}
+
+int main() {
+    int n = 3;
+    int k = 7;
+    int returnSize;
+
+    int* result = numsSameConsecDiff(n, k, &returnSize);
+
+    // Stampiamo i risultati
+    for (int i = 0; i < returnSize; i++) {
+        printf("%d ", result[i]);
+    }
+
+    // Liberiamo la memoria allocata per il risultato
+    free(result);
+
+    return 0;
+}

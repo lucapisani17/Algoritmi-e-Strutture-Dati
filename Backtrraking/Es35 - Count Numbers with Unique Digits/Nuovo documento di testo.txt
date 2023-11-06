@@ -1,0 +1,40 @@
+Spiegazione del codice:
+
+La funzione countUniqueDigits calcola il numero di numeri con cifre uniche nell'intervallo [0, 10^n).
+
+Inizia con result uguale a 10, poiché ci sono 10 possibili cifre (da 0 a 9) per la prima posizione.
+
+Utilizza un ciclo per considerare le posizioni successive. Per ogni posizione, calcola il numero di cifre uniche disponibili moltiplicando il numero di cifre rimanenti.
+
+La complessità temporale di questo algoritmo è O(n), dove n è il valore di input. Poiché n è limitato a 8 in base alle specifiche del problema, l'algoritmo ha una complessità temporale efficiente.
+
+#include <stdio.h>
+
+int countUniqueDigits(int n) {
+    if (n == 0) {
+        return 1; // Solo il numero 0 rientra nell'intervallo [0, 10^0)
+    }
+
+    int result = 10; // Inizializza il risultato con i numeri da 0 a 9
+
+    for (int i = 2; i <= n; i++) {
+        int uniqueDigits = 9;
+
+        // Calcola il numero di cifre uniche disponibili per ogni posizione
+        for (int j = 1; j < i; j++) {
+            uniqueDigits *= (10 - j);
+        }
+
+        result += uniqueDigits;
+    }
+
+    return result;
+}
+
+int main() {
+    int n = 2;
+    int result = countUniqueDigits(n);
+    printf("Number of numbers with unique digits: %d\n", result);
+
+    return 0;
+}

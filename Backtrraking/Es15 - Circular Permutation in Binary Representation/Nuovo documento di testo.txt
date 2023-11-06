@@ -1,0 +1,72 @@
+complex O(2^N)
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+void generatePermutation(int* result, bool* used, int n, int start, int* success) {
+    if (*success) {
+        return; // Abbiamo già trovato una soluzione
+    }
+
+    if (start == n) {
+        if (__builtin_popcount(result[0] ^ result[n-1]) == 1) {
+            *success = 1; // Abbiamo trovato una soluzione che soddisfa le condizioni
+        }
+        return;
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (!used[i]) {
+            if (start == 0 || __builtin_popcount(result[start - 1] ^ i) == 1) {
+                result[start] = i;
+                used[i] = true;
+                generatePermutation(result, used, n, start + 1, success);
+                used[i] = false;
+            }
+        }
+    }
+}
+
+int* grayCode(int n, int start) {
+    int size = 1 << n;
+    int* result = (int*)malloc(size * sizeof(int));
+    bool* used = (bool*)calloc(size, sizeof(bool));
+    int success = 0;
+
+    result[0] = start;
+    used[start] = true;
+    generatePermutation(result, used, size, 1, &success);
+
+    free(used);
+
+    if (success) {
+        return result;
+    } else {
+        free(result);
+        return NULL;
+    }
+}
+
+int main() {
+    int n = 3; // Esempio: n = 3
+    int start = 3; // Esempio: start = 3
+
+    int* result = grayCode(n, start);
+
+    if (result != NULL) {
+        printf("[");
+        for (int i = 0; i < (1 << n); i++) {
+            printf("%d", result[i]);
+            if (i < (1 << n) - 1) {
+                printf(", ");
+            }
+        }
+        printf("]\n");
+
+        free(result);
+    } else {
+        printf("Non è possibile trovare una permutazione che soddisfi le condizioni richieste.\n");
+    }
+
+    return 0;
+}

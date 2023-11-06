@@ -1,0 +1,68 @@
+Letter Case Permutation
+Given a string s, you can transform every letter individually to be lowercase or uppercase to create another string.
+
+Return a list of all possible strings we could create. Return the output in any order.
+
+ 
+
+Example 1:
+
+Input: s = "a1b2"
+Output: ["a1b2","a1B2","A1b2","A1B2"]
+
+
+complessitá O(2^n)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void backtrack(char* s, int index, char* path, char** result, int* resultSize) {
+    if (index == strlen(s)) {
+        char* copy = (char*)malloc((strlen(s) + 1) * sizeof(char)); // Allocazione di memoria per una copia del percorso
+        strcpy(copy, path); // Copia il percorso in copy
+        result[*resultSize] = copy; // Aggiungi copy ai risultati
+        (*resultSize)++;
+        return;
+    }
+
+    // Prova a trasformare il carattere corrente in minuscolo
+    path[index] = tolower(s[index]);
+    backtrack(s, index + 1, path, result, resultSize);
+
+    // Prova a trasformare il carattere corrente in maiuscolo
+    path[index] = toupper(s[index]);
+    backtrack(s, index + 1, path, result, resultSize);
+}
+
+char** letterCasePermutation(char* s, int* returnSize) {
+    int resultSize = 0;
+    char** result = (char**)malloc(1 * sizeof(char*));
+    char* path = (char*)malloc((strlen(s) + 1) * sizeof(char)); // Allocazione di memoria per il percorso
+    strcpy(path, s);
+
+    backtrack(s, 0, path, result, &resultSize); // Chiamata iniziale alla funzione di backtracking
+
+    free(path); // Libera la memoria allocata per il percorso
+
+    *returnSize = resultSize;
+    return result; // Restituisce i risultati trovati
+}
+
+int main() {
+    char s[] = "a1b2";
+    int returnSize;
+    char** result = letterCasePermutation(s, &returnSize);
+
+    printf("Output:\n");
+    for (int i = 0; i < returnSize; i++) {
+        printf("%s\n", result[i]);
+        free(result[i]);
+    }
+
+    free(result);
+
+    return 0;
+}
+
+

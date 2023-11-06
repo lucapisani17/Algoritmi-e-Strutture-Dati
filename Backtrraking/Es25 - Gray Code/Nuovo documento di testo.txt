@@ -1,0 +1,33 @@
+compelx O(2^n)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+int* grayCode(int n, int* returnSize) {
+    int size = pow(2, n);
+    int* result = (int*)malloc(size * sizeof(int));
+    *returnSize = size;
+    
+    for (int i = 0; i < size; i++) {
+        result[i] = i ^ (i >> 1);
+    }
+    
+    return result;
+}
+
+int main() {
+    int n = 2;
+    int returnSize;
+    int* result = grayCode(n, &returnSize);
+
+    printf("Output:\n");
+    for (int i = 0; i < returnSize; i++) {
+        printf("%d ", result[i]);
+    }
+    printf("\n");
+
+    free(result);
+
+    return 0;
+}

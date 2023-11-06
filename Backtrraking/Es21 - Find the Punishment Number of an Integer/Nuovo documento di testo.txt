@@ -1,0 +1,57 @@
+complex o(2^n)
+
+#include <stdio.h>
+#include <math.h>
+
+// Funzione ausiliaria che verifica se il requisito del problema è soddisfatto
+int check(int num) {
+    int i = 1;
+    int sum = 0;
+    int temp = num;
+    while (temp > 0) {
+        sum += temp % 10;
+        if (sum > i) return 0;
+        temp /= 10;
+        i++;
+    }
+    return sum == i;
+}
+
+// Funzione ricorsiva di backtracking
+int backtrack(int n, int current, int square_sum) {
+    if (current > n) {
+        return square_sum;
+    }
+
+    int result = 0;
+    int square = current * current;
+
+    if (check(square)) {
+        result += backtrack(n, current + 1, square_sum + square);
+    }
+
+    result += backtrack(n, current + 1, square_sum);
+
+    return result;
+}
+
+// Funzione principale che calcola il "punishment number" di n
+int punishment_number(int n) {
+    return backtrack(n, 1, 0);
+}
+
+int main() {
+    int n;
+    printf("Inserisci un numero positivo n: ");
+    scanf("%d", &n);
+
+    if (n <= 0) {
+        printf("Il numero deve essere positivo.\n");
+        return 1;
+    }
+
+    int result = punishment_number(n);
+    printf("Il punishment number di %d è: %d\n", n, result);
+
+    return 0;
+}

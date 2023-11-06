@@ -1,0 +1,69 @@
+
+O(m * n * 4^(m*n))
+
+
+#include <stdio.h>
+
+#define MAX_ROW 10
+#define MAX_COL 10
+
+int maxGold = 0;
+
+// Function to check if a cell is valid and contains gold
+int isValid(int row, int col, int m, int n, int grid[MAX_ROW][MAX_COL], int visited[MAX_ROW][MAX_COL]) {
+    return (row >= 0 && col >= 0 && row < m && col < n && grid[row][col] > 0 && visited[row][col] == 0);
+}
+
+// Backtracking function to find the maximum amount of gold
+void findMaxGold(int row, int col, int m, int n, int grid[MAX_ROW][MAX_COL], int visited[MAX_ROW][MAX_COL], int currentGold) {
+    if (grid[row][col] == 0) {
+        return;
+    }
+
+    currentGold += grid[row][col];
+    visited[row][col] = 1;
+
+    if (currentGold > maxGold) {
+        maxGold = currentGold;
+    }
+
+    int dr[] = {-1, 1, 0, 0};
+    int dc[] = {0, 0, -1, 1};
+
+    for (int i = 0; i < 4; i++) {
+        int newRow = row + dr[i];
+        int newCol = col + dc[i];
+
+        if (isValid(newRow, newCol, m, n, grid, visited)) {
+            findMaxGold(newRow, newCol, m, n, grid, visited, currentGold);
+        }
+    }
+
+    visited[row][col] = 0;
+}
+
+int getMaxGold(int m, int n, int grid[MAX_ROW][MAX_COL]) {
+    maxGold = 0;
+    int visited[MAX_ROW][MAX_COL] = {{0}};
+
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            if (grid[i][j] > 0) {
+                findMaxGold(i, j, m, n, grid, visited, 0);
+            }
+        }
+    }
+
+    return maxGold;
+}
+
+int main() {
+    int m = 3, n = 3;
+    int grid[MAX_ROW][MAX_COL] = {{0, 6, 0}, {5, 8, 7}, {0, 9, 0}};
+
+    int result = getMaxGold(m, n, grid);
+
+    printf("Maximum amount of gold collected: %d\n", result);
+
+    return 0;
+}

@@ -1,0 +1,66 @@
+complex O(3^n * 4^m), dove n è il numero di cifre che corrispondono a 3 lettere (come il 2, 3, 4, 5 e 6) e m è il numero di cifre che corrispondono a 4 lettere (come il 7, 8 e 9). Questo perché l'algoritmo esplora tutte le possibili combinazioni di lettere per ogni cifra nel numero di input.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Array che contiene le corrispondenze tra numeri e lettere
+char* letter_map[] = {
+    "abc", "def", "ghi", "jkl",
+    "mno", "pqrs", "tuv", "wxyz"
+};
+
+// Funzione di backtracking
+void backtrack(char* digits, char** letter_combinations, int* returnSize, char* temp, int index) {
+    if (digits[index] == '\0') {
+        temp[index] = '\0';
+        letter_combinations[*returnSize] = (char*)malloc((strlen(temp) + 1) * sizeof(char));
+        strcpy(letter_combinations[*returnSize], temp);
+        (*returnSize)++;
+        return;
+    }
+
+    int digit = digits[index] - '2'; // Calcola l'indice corrispondente all'array letter_map
+    char* letters = letter_map[digit];
+    int len = strlen(letters);
+
+    for (int i = 0; i < len; i++) {
+        temp[index] = letters[i];
+        backtrack(digits, letter_combinations, returnSize, temp, index + 1);
+    }
+}
+
+char** letterCombinations(char* digits, int* returnSize) {
+    int n = strlen(digits);
+    if (n == 0) {
+        *returnSize = 0;
+        return NULL;
+    }
+
+    char** letter_combinations = (char**)malloc(1000 * sizeof(char*));
+    char* temp = (char*)malloc((n + 1) * sizeof(char));
+
+    *returnSize = 0;
+
+    backtrack(digits, letter_combinations, returnSize, temp, 0);
+
+    free(temp);
+    return letter_combinations;
+}
+
+int main() {
+    char* digits = "23";
+    int returnSize;
+
+    char** result = letterCombinations(digits, &returnSize);
+
+    printf("Output:\n");
+    for (int i = 0; i < returnSize; i++) {
+        printf("%s\n", result[i]);
+        free(result[i]);
+    }
+
+    free(result);
+
+    return 0;
+}

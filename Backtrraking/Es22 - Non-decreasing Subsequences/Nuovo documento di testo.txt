@@ -1,0 +1,65 @@
+complex O(2^n),
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_LEN 10
+
+void findSubsequences(int* nums, int numsSize, int* temp, int tempSize, int start, int** result, int* returnSize, int** returnColumnSizes) {
+    if (tempSize >= 2) {
+        result[*returnSize] = (int*)malloc(tempSize * sizeof(int));
+        for (int i = 0; i < tempSize; i++) {
+            result[*returnSize][i] = temp[i];
+        }
+        (*returnColumnSizes)[*returnSize] = tempSize;
+        (*returnSize)++;
+    }
+
+    for (int i = start; i < numsSize; i++) {
+        if (i > start && nums[i] == nums[i-1]) continue;
+        temp[tempSize] = nums[i];
+        findSubsequences(nums, numsSize, temp, tempSize + 1, i + 1, result, returnSize, returnColumnSizes);
+    }
+}
+
+int** findSubsequences(int* nums, int numsSize, int* returnSize, int** returnColumnSizes) {
+    int** result = (int**)malloc(MAX_LEN * sizeof(int*));
+    *returnColumnSizes = (int*)malloc(MAX_LEN * sizeof(int));
+    *returnSize = 0;
+
+    int* temp = (int*)malloc(numsSize * sizeof(int));
+
+    findSubsequences(nums, numsSize, temp, 0, 0, result, returnSize, returnColumnSizes);
+
+    free(temp);
+    return result;
+}
+
+int main() {
+    int nums[] = {4, 6, 7, 7};
+    int numsSize = 4;
+
+    int returnSize;
+    int* returnColumnSizes;
+
+    int** result = findSubsequences(nums, numsSize, &returnSize, &returnColumnSizes);
+
+    printf("Output:\n");
+    for (int i = 0; i < returnSize; i++) {
+        printf("[");
+        for (int j = 0; j < returnColumnSizes[i]; j++) {
+            printf("%d", result[i][j]);
+            if (j < returnColumnSizes[i] - 1) {
+                printf(",");
+            }
+        }
+        printf("]\n");
+        free(result[i]);
+    }
+
+    free(result);
+    free(returnColumnSizes);
+
+    return 0;
+}

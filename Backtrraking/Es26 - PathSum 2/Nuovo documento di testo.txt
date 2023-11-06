@@ -1,0 +1,74 @@
+Complex O(n^2), dove n è il numero di nodi nell'albero. Tuttavia, in casi più bilanciati, la complessità può essere più vicina a O(n*log(n)).
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definizione di una struttura per i nodi dell'albero
+typedef struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+} TreeNode;
+
+// Funzione ricorsiva per trovare i percorsi
+void findPaths(TreeNode* node, int targetSum, int* path, int pathLen) {
+    if (node == NULL) return;
+
+    // Aggiunge il valore del nodo al percorso corrente
+    path[pathLen] = node->val;
+    pathLen++;
+
+    // Se siamo arrivati ad una foglia
+    if (node->left == NULL && node->right == NULL) {
+        // Verifica se la somma del percorso è uguale a targetSum
+        int sum = 0;
+        for (int i = 0; i < pathLen; i++) {
+            sum += path[i];
+        }
+        if (sum == targetSum) {
+            // Stampa il percorso
+            for (int i = 0; i < pathLen; i++) {
+                printf("%d ", path[i]);
+            }
+            printf("\n");
+        }
+    } else {
+        // Continua la ricerca nei sottoalberi
+        findPaths(node->left, targetSum, path, pathLen);
+        findPaths(node->right, targetSum, path, pathLen);
+    }
+}
+
+// Funzione di utilità per inizializzare un nuovo nodo dell'albero
+TreeNode* newNode(int val) {
+    TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));
+    node->val = val;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+
+int main() {
+    // Creazione dell'albero di esempio
+    TreeNode* root = newNode(5);
+    root->left = newNode(4);
+    root->right = newNode(8);
+    root->left->left = newNode(11);
+    root->right->left = newNode(13);
+    root->right->right = newNode(4);
+    root->left->left->left = newNode(7);
+    root->left->left->right = newNode(2);
+    root->right->right->left = newNode(5);
+    root->right->right->right = newNode(1);
+
+    int targetSum = 22;
+    int* path = (int*)malloc(1000 * sizeof(int)); // Allocazione dinamica di un array per il percorso
+
+    // Trova e stampa i percorsi con la somma target
+    findPaths(root, targetSum, path, 0);
+
+    // Libera la memoria allocata per l'array del percorso
+    free(path);
+
+    return 0;
+}

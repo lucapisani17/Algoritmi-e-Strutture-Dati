@@ -1,0 +1,76 @@
+COMPLESSITÁ O(2^N)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+void backtrack(int** graph, int graphSize, int* graphColSize, int current, int target, int* path, int pathSize, int*** result, int* resultSize, int** resultColSize) {
+    if (current == target) { // Se siamo arrivati al nodo di destinazione, abbiamo trovato un percorso
+        *resultSize += 1; // Aumentiamo il conteggio dei percorsi trovati
+        *result = (int**)realloc(*result, (*resultSize) * sizeof(int*)); // Riallochiamo la memoria per contenere il nuovo percorso
+        (*resultColSize) = (int*)realloc(*resultColSize, (*resultSize) * sizeof(int)); // Riallochiamo la memoria per contenere la dimensione del nuovo percorso
+        (*resultColSize)[*resultSize - 1] = pathSize; // Memorizziamo la dimensione del percorso corrente
+        (*result)[*resultSize - 1] = (int*)malloc(pathSize * sizeof(int)); // Allochiamo la memoria per il percorso corrente
+
+        // Copiamo il percorso corrente nel risultato
+        for (int i = 0; i < pathSize; i++) {
+            (*result)[*resultSize - 1][i] = path[i];
+        }
+        return;
+    }
+
+    // Altrimenti, esploriamo i nodi successivi
+    for (int i = 0; i < graphColSize[current]; i++) {
+        path[pathSize] = graph[current][i]; // Aggiungiamo il nodo corrente al percorso
+        backtrack(graph, graphSize, graphColSize, graph[current][i], target, path, pathSize + 1, result, resultSize, resultColSize); // Chiamata ricorsiva per esplorare il nodo successivo
+    }
+}
+
+int** allPathsSourceTarget(int** graph, int graphSize, int* graphColSize, int* returnSize, int** returnColumnSizes) {
+    int** result = (int**)malloc(sizeof(int*)); // Allochiamo la memoria per contenere i percorsi
+    *returnSize = 0; // Inizializziamo il numero di percorsi trovati
+    *returnColumnSizes = (int*)malloc(sizeof(int)); // Allochiamo la memoria per contenere le dimensioni dei percorsi
+
+    int* path = (int*)malloc(graphSize * sizeof(int)); // Allochiamo la memoria per contenere il percorso corrente
+    path[0] = 0; // Il percorso inizia dal nodo 0
+    int pathSize = 1; // La dimensione iniziale del percorso è 1
+
+    backtrack(graph, graphSize, graphColSize, 0, graphSize - 1, path, pathSize, &result, returnSize, returnColumnSizes); // Chiamata iniziale alla funzione di backtracking
+
+    free(path); // Liberiamo la memoria allocata per il percorso
+    return result; // Restituiamo i percorsi trovati
+}
+
+int main() {
+    int graphSize = 4;
+    int* graphColSize = (int*)malloc(4 * sizeof(int));
+    graphColSize[0] = 2; graphColSize[1] = 1; graphColSize[2] = 1; graphColSize[3] = 0;
+    int* graph[4];
+    int row1[] = {1, 2};
+    int row2[] = {3};
+    int row3[] = {3};
+    int row4[] = {};
+    graph[0] = row1;
+    graph[1] = row2;
+    graph[2] = row3;
+    graph[3] = row4;
+
+    int returnSize;
+    int* returnColumnSizes;
+
+    int** result = allPathsSourceTarget(graph, graphSize, graphColSize, &returnSize, &returnColumnSizes);
+
+    printf("Output:\n");
+    for (int i = 0; i < returnSize; i++) {
+        for (int j = 0; j < returnColumnSizes[i]; j++) {
+            printf("%d ", result[i][j]);
+        }
+        printf("\n");
+        free(result[i]);
+    }
+
+    free(graphColSize);
+    free(result);
+    free(returnColumnSizes);
+
+    return 0;
+}

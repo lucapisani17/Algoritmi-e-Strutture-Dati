@@ -1,0 +1,57 @@
+complex O(C(n,k))
+
+#include <stdio.h>
+#include <stdlib.h>
+
+void backtrack(int start, int n, int k, int* path, int pathSize, int** result, int* returnSize) {
+    if (pathSize == k) {
+        result[*returnSize] = (int*)malloc(k * sizeof(int));
+        for (int i = 0; i < k; i++) {
+            result[*returnSize][i] = path[i];
+        }
+        (*returnSize)++;
+        return;
+    }
+
+    for (int i = start; i <= n; i++) {
+        path[pathSize] = i;
+        backtrack(i + 1, n, k, path, pathSize + 1, result, returnSize);
+    }
+}
+
+int** combine(int n, int k, int* returnSize, int** returnColumnSizes) {
+    int** result = (int**)malloc(2000 * sizeof(int*)); // Assuming a maximum of 2000 combinations
+    *returnSize = 0;
+    *returnColumnSizes = (int*)malloc(2000 * sizeof(int));
+    
+    int* path = (int*)malloc(k * sizeof(int));
+    
+    backtrack(1, n, k, path, 0, result, returnSize);
+    
+    free(path);
+    
+    return result;
+}
+
+int main() {
+    int n = 4;
+    int k = 2;
+    int returnSize;
+    int* returnColumnSizes;
+
+    int** result = combine(n, k, &returnSize, &returnColumnSizes);
+
+    for (int i = 0; i < returnSize; i++) {
+        printf("[");
+        for (int j = 0; j < returnColumnSizes[i]; j++) {
+            printf("%d ", result[i][j]);
+        }
+        printf("]\n");
+        free(result[i]);
+    }
+
+    free(result);
+    free(returnColumnSizes);
+
+    return 0;
+}

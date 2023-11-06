@@ -1,0 +1,71 @@
+Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.
+
+compelssitá O(n!) con n lunghezza dell'array
+
+#include <stdio.h>
+#include <stdlib.h>
+
+void swap(int* a, int* b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void backtrack(int* nums, int numsSize, int** result, int* resultSize, int* path, int pathSize, int* used) {
+    if (pathSize == numsSize) { // Se abbiamo completato un percorso, lo aggiungiamo al risultato
+        *resultSize += 1; // Aumentiamo il conteggio dei risultati
+        *result = (int**)realloc(*result, (*resultSize) * sizeof(int*)); // Riallochiamo la memoria per contenere il nuovo percorso
+        (*result)[*resultSize - 1] = (int*)malloc(numsSize * sizeof(int)); // Allochiamo la memoria per il nuovo percorso
+
+        // Copiamo il percorso corrente nel risultato
+        for (int i = 0; i < numsSize; i++) {
+            (*result)[*resultSize - 1][i] = path[i];
+        }
+        return;
+    }
+
+    for (int i = 0; i < numsSize; i++) {
+        if (!used[i]) { // Se l'elemento non è stato ancora utilizzato
+            path[pathSize] = nums[i]; // Aggiungiamo l'elemento al percorso
+            used[i] = 1; // Contrassegniamo l'elemento come utilizzato
+            backtrack(nums, numsSize, result, resultSize, path, pathSize + 1, used); // Chiamata ricorsiva per esplorare il prossimo elemento
+            used[i] = 0; // Ripristiniamo l'elemento come non utilizzato
+        }
+    }
+}
+
+int** permute(int* nums, int numsSize, int* returnSize) {
+    int** result = (int**)malloc(sizeof(int*)); // Allochiamo la memoria per contenere i risultati
+    *returnSize = 0; // Inizializziamo il numero di risultati trovati
+
+    int* path = (int*)malloc(numsSize * sizeof(int)); // Allochiamo la memoria per contenere il percorso corrente
+    int* used = (int*)calloc(numsSize, sizeof(int)); // Allochiamo la memoria per tenere traccia degli elementi utilizzati
+
+    backtrack(nums, numsSize, &result, returnSize, path, 0, used); // Chiamata iniziale alla funzione di backtracking
+
+    free(path); // Liberiamo la memoria allocata per il percorso
+    free(used); // Liberiamo la memoria allocata per l'array di controllo
+
+    return result; // Restituiamo i risultati trovati
+}
+
+int main() {
+    int nums[] = {1, 2, 3};
+    int numsSize = 3;
+    int returnSize;
+
+    int** result = permute(nums, numsSize, &returnSize);
+
+    printf("Output:\n");
+    for (int i = 0; i < returnSize; i++) {
+        for (int j = 0; j < numsSize; j++) {
+            printf("%d ", result[i][j]);
+            free(result[i]);
+        }
+        printf("\n");
+    }
+
+    free(result);
+
+    return 0;
+}

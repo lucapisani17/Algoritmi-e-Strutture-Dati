@@ -1,0 +1,80 @@
+Spiegazione del codice:
+
+La funzione addCoordinate è la funzione ricorsiva principale che genera tutte le possibili combinazioni di coordinate originali a partire da una stringa s.
+
+La funzione restoreCoordinates è la funzione di interfaccia che inizializza e chiama addCoordinate.
+
+Nel main, viene chiamata la funzione restoreCoordinates con la stringa s. I risultati vengono quindi stampati.
+
+La complessità temporale di questo algoritmo dipende dalle dimensioni del problema. Nel caso peggiore, in cui s ha una lunghezza di n, la complessità è O(2^n), poiché ci sono 2^n possibili combinazioni di coordinate originali. Tuttavia, in pratica, il numero di risultati potrebbe essere molto inferiore a questa cifra massima.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Funzione di utilità per aggiungere coordinate valide alla lista
+void addCoordinate(char* s, int index, char* current, char** result, int* returnSize) {
+    if (index == strlen(s)) {
+        result[*returnSize] = (char*)malloc((strlen(current) + 1) * sizeof(char));
+        strcpy(result[*returnSize], current);
+        (*returnSize)++;
+        return;
+    }
+
+    // Aggiunge un punto e una virgola come separatori
+    if (index > 0) {
+        strcat(current, ", ");
+    }
+
+    // Prova tutte le combinazioni possibili
+    for (int i = index; i < strlen(s); i++) {
+        char* substr = (char*)malloc(3 * sizeof(char)); // Massimo 3 caratteri per una cifra (es. "123")
+        strncpy(substr, s + index, i - index + 1);
+        substr[i - index + 1] = '\0';
+
+        // Se la sottostringa è una cifra valida, aggiunge la coordinata
+        if (atoi(substr) <= 1000) {
+            strcat(current, "(");
+            strcat(current, substr);
+            strcat(current, ")");
+            addCoordinate(s, i + 1, current, result, returnSize);
+            current[strlen(current) - strlen(substr) - 2] = '\0'; // Rimuove l'ultima coordinata
+        }
+
+        free(substr);
+    }
+}
+
+char** restoreCoordinates(char* s, int* returnSize) {
+    char** result = (char**)malloc(1000 * sizeof(char*)); // Allocazione dinamica di memoria per il risultato
+    *returnSize = 0;
+
+    char* current = (char*)malloc((strlen(s) + 1) * sizeof(char));
+    current[0] = '\0';
+
+    addCoordinate(s, 1, current, result, returnSize);
+
+    free(current);
+
+    return result;
+}
+
+int main() {
+    char s[] = "(123)";
+    int returnSize;
+
+    char** result = restoreCoordinates(s, &returnSize);
+
+    // Stampa i risultati
+    for (int i = 0; i < returnSize; i++) {
+        printf("%s\n", result[i]);
+    }
+
+    // Libera la memoria allocata per il risultato
+    for (int i = 0; i < returnSize; i++) {
+        free(result[i]);
+    }
+    free(result);
+
+    return 0;
+}

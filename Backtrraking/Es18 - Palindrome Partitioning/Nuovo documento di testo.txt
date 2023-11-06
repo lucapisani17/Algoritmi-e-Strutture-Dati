@@ -1,0 +1,57 @@
+complex esp nel caso peggiore. dipende dalle stringhe di lunghezza n
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define MAX_LEN 100
+
+// Funzione per verificare se una sottostringa è un palindromo
+bool isPalindrome(char* s, int start, int end) {
+    while (start < end) {
+        if (s[start] != s[end]) {
+            return false;
+        }
+        start++;
+        end--;
+    }
+    return true;
+}
+
+// Funzione di backtracking per trovare tutte le partizioni palindrome
+void partitionPalindrome(char* s, int start, int n, char* path[], int pathLen) {
+    if (start == n) {
+        // Abbiamo trovato una partizione valida
+        for (int i = 0; i < pathLen; i++) {
+            printf("%s ", path[i]);
+        }
+        printf("\n");
+        return;
+    }
+
+    for (int i = start; i < n; i++) {
+        if (isPalindrome(s, start, i)) {
+            // Aggiunge la sottostringa palindroma alla lista delle parti
+            char substring[MAX_LEN];
+            strncpy(substring, s + start, i - start + 1);
+            substring[i - start + 1] = '\0';
+            path[pathLen] = strdup(substring);
+
+            // Prosegue la ricerca
+            partitionPalindrome(s, i + 1, n, path, pathLen + 1);
+
+            // Rimuove l'ultima sottostringa aggiunta per esplorare altre possibilità
+            free(path[pathLen]);
+        }
+    }
+}
+
+int main() {
+    char s[] = "aab";
+    int n = strlen(s);
+    char* path[MAX_LEN]; // Array per memorizzare le parti
+
+    partitionPalindrome(s, 0, n, path, 0);
+
+    return 0;
+}

@@ -1,0 +1,55 @@
+complessitá O (3^n)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Funzione per generare le stringhe felici
+void generateHappyStrings(char* result, int n, int* k, int index, char prevChar) {
+    if (*k == 0) {
+        return; // Abbiamo già trovato la k-esima stringa felice
+    }
+    
+    if (index == n) {
+        (*k)--;
+        if (*k == 0) {
+            printf("%s\n", result); // Abbiamo trovato la k-esima stringa felice
+        }
+        return;
+    }
+
+    for (char c = 'a'; c <= 'c'; c++) {
+        if (c != prevChar) {
+            result[index] = c;
+            generateHappyStrings(result, n, k, index + 1, c);
+        }
+    }
+}
+
+// Funzione principale che restituisce la k-esima stringa felice di lunghezza n
+char* kthHappyString(int n, int k) {
+    char* result = (char*)malloc((n + 1) * sizeof(char));
+    result[n] = '\0';
+    
+    int count = 0; // Contatore per tener traccia del numero di stringhe felici trovate
+    
+    // Genera le stringhe felici a partire dalla prima lettera
+    for (char c = 'a'; c <= 'c'; c++) {
+        result[0] = c;
+        generateHappyStrings(result, n, &k, 1, c);
+    }
+    
+    if (k == 0) {
+        return result;
+    } else {
+        return ""; // Non ci sono abbastanza stringhe felici di lunghezza n
+    }
+}
+
+int main() {
+    int n = 1;
+    int k = 3;
+    char* result = kthHappyString(n, k);
+    printf("Output: %s\n", result);
+    free(result);
+    return 0;
+}

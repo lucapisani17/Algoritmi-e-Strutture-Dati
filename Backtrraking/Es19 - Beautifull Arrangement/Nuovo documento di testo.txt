@@ -1,0 +1,49 @@
+complex caso peggiore exp
+
+#include <stdio.h>
+
+int count = 0; // Contatore per il numero di beautiful arrangements
+
+// Funzione per scambiare due elementi in un array
+void swap(int* arr, int i, int j) {
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+// Funzione ricorsiva per trovare i beautiful arrangements
+void findArrangements(int* arr, int n, int index) {
+    if (index == n) {
+        // Abbiamo trovato un beautiful arrangement
+        count++;
+        return;
+    }
+
+    for (int i = index; i < n; i++) {
+        // Prova a scambiare l'elemento attuale con l'elemento a index
+        swap(arr, i, index);
+
+        // Verifica se l'elemento scambiato soddisfa i criteri
+        if (arr[index] % (index + 1) == 0 || (index + 1) % arr[index] == 0) {
+            findArrangements(arr, n, index + 1);
+        }
+
+        // Ripristina l'array allo stato precedente
+        swap(arr, i, index);
+    }
+}
+
+int main() {
+    int n = 3; // Numero di elementi
+
+    int arr[n];
+    for (int i = 0; i < n; i++) {
+        arr[i] = i + 1; // Inizializza l'array con numeri da 1 a n
+    }
+
+    findArrangements(arr, n, 0);
+
+    printf("Il numero di beautiful arrangements per n=%d è: %d\n", n, count);
+
+    return 0;
+}

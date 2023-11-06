@@ -1,0 +1,46 @@
+complessitá esponenziale nel caso peggiore
+
+#include <stdio.h>
+
+#define MAX 9
+
+int combination[MAX]; // Array per memorizzare la combinazione corrente
+int count = 0;        // Contatore per il numero totale di combinazioni
+
+// Funzione ricorsiva per trovare le combinazioni
+void findCombinations(int k, int n, int start) {
+    if (k == 0 && n == 0) {
+        // Abbiamo trovato una combinazione valida
+        printf("Combination %d: ", ++count);
+        for (int i = 0; i < MAX; i++) {
+            if (combination[i]) {
+                printf("%d ", combination[i]);
+            }
+        }
+        printf("\n");
+        return;
+    }
+
+    if (k == 0 || n == 0 || start > 9) {
+        // Termina la ricorsione se k o n sono diventati zero oppure se abbiamo superato il massimo
+        return;
+    }
+
+    // Prova ad aggiungere il numero corrente alla combinazione
+    for (int i = start; i <= 9; i++) {
+        if (n - i >= 0) {
+            combination[MAX - k] = i;
+            findCombinations(k - 1, n - i, i + 1);
+            combination[MAX - k] = 0; // Resetta la combinazione
+        }
+    }
+}
+
+int main() {
+    int k = 3; // Numero di elementi nella combinazione
+    int n = 15; // Somma desiderata
+
+    findCombinations(k, n, 1);
+
+    return 0;
+}

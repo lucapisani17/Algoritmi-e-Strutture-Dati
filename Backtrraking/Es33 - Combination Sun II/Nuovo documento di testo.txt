@@ -1,0 +1,102 @@
+Spiegazione del codice:
+
+La funzione compare è una funzione di confronto utilizzata per la funzione di ordinamento qsort.
+
+La funzione findCombinations è la funzione ricorsiva principale che cerca tutte le possibili combinazioni.
+
+La funzione combinationSum2 è la funzione di interfaccia che inizializza e chiama findCombinations.
+
+Nel main, viene chiamata la funzione combinationSum2 con l'array di input candidates, la sua dimensione candidatesSize e il target target. I risultati vengono quindi stampati.
+
+La complessità temporale di questo algoritmo dipende dalla struttura dell'output e dalla dimensione dell'array candidates. Nel caso peggiore, la complessità è O(2^n), dove n è la dimensione dell'array. Tuttavia, in pratica, il numero di combinazioni possibili potrebbe essere molto inferiore a questa cifra massima.
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Funzione di utilità per confrontare due interi per l'ordinamento (usata per qsort)
+int compare(const void* a, const void* b) {
+    return (*(int*)a - *(int*)b);
+}
+
+// Funzione ricorsiva per trovare le combinazioni
+void findCombinations(int* candidates, int candidatesSize, int target, int* combination, int combinationSize, int start, int** result, int* returnSize, int* returnColumnSizes) {
+    if (target == 0) {
+        // La combinazione attuale ha una somma uguale al target, la aggiungiamo ai risultati
+        returnColumnSizes[*returnSize] = combinationSize;
+        result[*returnSize] = (int*)malloc(combinationSize * sizeof(int));
+        for (int i = 0; i < combinationSize; i++) {
+            result[*returnSize][i] = combination[i];
+        }
+        (*returnSize)++;
+        return;
+    }
+
+    for (int i = start; i < candidatesSize; i++) {
+        if (i > start && candidates[i] == candidates[i - 1]) {
+            continue; // Salta i duplicati
+        }
+
+        if (candidates[i] > target) {
+            break; // Esce se il candidato è troppo grande
+        }
+
+        // Aggiunge il candidato corrente alla combinazione
+        combination[combinationSize] = candidates[i];
+
+        // Richiama ricorsivamente la funzione con il nuovo target e la nuova combinazione
+        findCombinations(candidates, candidatesSize, target - candidates[i], combination, combinationSize + 1, i + 1, result, returnSize, returnColumnSizes);
+
+        // Rimuove il candidato corrente dalla combinazione
+        combinationSize--;
+    }
+}
+
+int** combinationSum2(int* candidates, int candidatesSize, int target, int* returnSize, int** returnColumnSizes) {
+    // Ordina l'array per semplificare l'eliminazione dei duplicati
+    qsort(candidates, candidatesSize, sizeof(int), compare);
+
+    int** result = (int**)malloc(1000 * sizeof(int*));
+    *returnSize = 0;
+    *returnColumnSizes = (int*)malloc(1000 * sizeof(int));
+
+    int* combination = (int*)malloc(candidatesSize * sizeof(int));
+
+    findCombinations(candidates, candidatesSize, target, combination, 0, 0, result, returnSize, *returnColumnSizes);
+
+    free(combination);
+
+    return result;
+}
+
+int main() {
+    int candidates[] = {10, 1, 2, 7, 6, 1, 5};
+    int candidatesSize = sizeof(candidates) / sizeof(candidates[0]);
+    int target = 8;
+    int returnSize;
+    int* returnColumnSizes = NULL;
+
+    int** result = combinationSum2(candidates, candidatesSize, target, &returnSize, &returnColumnSizes);
+
+    // Stampa i risultati
+    for (int i = 0; i < returnSize; i++) {
+        printf("[");
+        for (int j = 0; j < returnColumnSizes[i]; j++) {
+            printf("%d", result[i][j]);
+            if (j < returnColumnSizes[i] - 1) {
+                printf(", ");
+            }
+        }
+        printf("]\n");
+    }
+
+    // Libera la memoria allocata
+    for (int i = 0; i < returnSize; i++) {
+        free(result[i]);
+    }
+    free(result);
+    free(returnColumnSizes);
+
+    return 0;
+}

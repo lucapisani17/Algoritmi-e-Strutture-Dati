@@ -1,0 +1,74 @@
+//complessitá O(n)
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definizione della struttura del nodo dell'albero
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+};
+
+// Funzione di utilità per stampare un percorso
+void printPath(int* path, int pathLength) {
+    for (int i = 0; i < pathLength; i++) {
+        printf("%d", path[i]);
+        if (i < pathLength - 1) {
+            printf("->");
+        }
+    }
+    printf("\n");
+}
+
+// Funzione di backtracking per trovare tutti i percorsi radice-foglia
+void findPaths(struct TreeNode* node, int* path, int pathLength) {
+    if (node == NULL) {
+        return;
+    }
+
+    path[pathLength] = node->val;
+    pathLength++;
+
+    if (node->left == NULL && node->right == NULL) {
+        printPath(path, pathLength);
+    } else {
+        findPaths(node->left, path, pathLength);
+        findPaths(node->right, path, pathLength);
+    }
+}
+
+// Funzione principale per trovare tutti i percorsi radice-foglia
+void rootToLeafPaths(struct TreeNode* root) {
+    int* path = (int*)malloc(1000 * sizeof(int)); // Allocazione di memoria per il percorso
+    findPaths(root, path, 0);
+    free(path); // Libera la memoria allocata per il percorso
+}
+
+int main() {
+    // Creazione dell'albero di esempio
+    struct TreeNode* root = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    root->val = 1;
+    root->left = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    root->left->val = 2;
+    root->left->left = NULL;
+    root->left->right = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    root->left->right->val = 5;
+    root->left->right->left = NULL;
+    root->left->right->right = NULL;
+    root->right = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    root->right->val = 3;
+    root->right->left = NULL;
+    root->right->right = NULL;
+
+    // Trova e stampa tutti i percorsi radice-foglia
+    rootToLeafPaths(root);
+
+    // Libera la memoria allocata per l'albero
+    free(root->left->right);
+    free(root->left);
+    free(root->right);
+    free(root);
+
+    return 0;
+}

@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void findCombinations(int* candidates, int candidatesSize, int target, int* combination, int combinationSize, int start, int** result, int* returnSize, int** returnColumnSizes) {
+    if (target == 0) {
+        result[*returnSize] = (int*)malloc(combinationSize * sizeof(int));
+        *returnColumnSizes = (int*)realloc(*returnColumnSizes, (*returnSize + 1) * sizeof(int));
+        (*returnColumnSizes)[*returnSize] = combinationSize;
+        for (int i = 0; i < combinationSize; i++) {
+            result[*returnSize][i] = combination[i];
+        }
+        (*returnSize)++;
+        return;
+    }
+
+    for (int i = start; i < candidatesSize && candidates[i] <= target; i++) {
+        combination[combinationSize] = candidates[i];
+        findCombinations(candidates, candidatesSize, target - candidates[i], combination, combinationSize + 1, i, result, returnSize, returnColumnSizes);
+    }
+}
+
+int** combinationSum(int* candidates, int candidatesSize, int target, int* returnSize, int** returnColumnSizes) {
+    int** result = (int**)malloc(1000 * sizeof(int*)); // Assuming max 1000 combinations
+    *returnSize = 0;
+    *returnColumnSizes = (int*)malloc(1000 * sizeof(int));
+
+    int* combination = (int*)malloc(candidatesSize * sizeof(int));
+
+    findCombinations(candidates, candidatesSize, target, combination, 0, 0, result, returnSize, returnColumnSizes);
+
+    free(combination);
+
+    return result;
+}
+
+int main() {
+    int candidates[] = {2, 3, 6, 7};
+    int candidatesSize = 4;
+    int target = 7;
+    int returnSize;
+    int* returnColumnSizes;
+
+    int** result = combinationSum(candidates, candidatesSize, target, &returnSize, &returnColumnSizes);
+
+    for (int i = 0; i < returnSize; i++) {
+        printf("[");
+        for (int j = 0; j < returnColumnSizes[i]; j++) {
+            printf("%d ", result[i][j]);
+        }
+        printf("]\n");
+        free(result[i]);
+    }
+
+    free(result);
+    free(returnColumnSizes);
+
+    return 0;
+}

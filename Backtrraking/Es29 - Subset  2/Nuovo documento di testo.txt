@@ -1,0 +1,98 @@
+Spiegazione del codice:
+
+La funzione generateSubsets è la funzione ricorsiva principale che genera i sottoinsiemi. Viene utilizzata un'appropriata allocazione dinamica della memoria per gestire l'array di risultati.
+
+La funzione subsetsWithDup è la funzione di interfaccia che inizializza e chiama generateSubsets. Ordina l'array di input per gestire i duplicati.
+
+La funzione compare è una funzione di confronto utilizzata per la funzione di ordinamento qsort.
+
+Nel main, viene chiamata la funzione subsetsWithDup con l'array di input nums e la sua dimensione numsSize. I risultati vengono quindi stampati.
+
+La complessità temporale di questo algoritmo è di O(2^n), dove n è la lunghezza dell'array nums. Ciò perché ci sono 2^n sottoinsiemi possibili in un insieme di n elementi.
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+// Funzione ricorsiva per generare i sottoinsiemi
+void generateSubsets(int* nums, int numsSize, int* subset, int subsetSize, int start, bool* used, int*** result, int* returnSize, int** returnColumnSizes) {
+    // Allocazione dinamica di memoria per la nuova dimensione di colonna
+    *returnColumnSizes = (int*)realloc(*returnColumnSizes, (*returnSize + 1) * sizeof(int));
+    
+    // Allocazione dinamica di memoria per la nuova riga di risultato
+    *result = (int**)realloc(*result, (*returnSize + 1) * sizeof(int*));
+    
+    // Allocazione dinamica di memoria per la nuova riga di subset
+    (*result)[*returnSize] = (int*)malloc(subsetSize * sizeof(int));
+    (*returnColumnSizes)[*returnSize] = subsetSize;
+    
+    // Copia i valori di subset nel risultato corrente
+    for (int i = 0; i < subsetSize; i++) {
+        (*result)[*returnSize][i] = subset[i];
+    }
+    
+    (*returnSize)++;
+    
+    for (int i = start; i < numsSize; i++) {
+        if (i > start && nums[i] == nums[i - 1]) {
+            continue; // Salta i duplicati
+        }
+        
+        subset[subsetSize] = nums[i];
+        generateSubsets(nums, numsSize, subset, subsetSize + 1, i + 1, used, result, returnSize, returnColumnSizes);
+    }
+}
+
+int** subsetsWithDup(int* nums, int numsSize, int* returnSize, int** returnColumnSizes) {
+    // Ordina l'array in modo da gestire i duplicati
+    qsort(nums, numsSize, sizeof(int), compare);
+    
+    int** result = NULL;
+    *returnSize = 0;
+    *returnColumnSizes = (int*)malloc(sizeof(int));
+    int* subset = (int*)malloc(numsSize * sizeof(int));
+    bool* used = (bool*)malloc(numsSize * sizeof(bool));
+    
+    generateSubsets(nums, numsSize, subset, 0, 0, used, &result, returnSize, returnColumnSizes);
+    
+    free(subset);
+    free(used);
+    
+    return result;
+}
+
+int compare(const void* a, const void* b) {
+    return (*(int*)a - *(int*)b);
+}
+
+int main() {
+    int nums[] = {1, 2, 2};
+    int numsSize = sizeof(nums) / sizeof(nums[0]);
+    int returnSize;
+    int* returnColumnSizes = NULL;
+    
+    int** result = subsetsWithDup(nums, numsSize, &returnSize, &returnColumnSizes);
+    
+    // Stampa i risultati
+    for (int i = 0; i < returnSize; i++) {
+        printf("[");
+        for (int j = 0; j < returnColumnSizes[i]; j++) {
+            printf("%d", result[i][j]);
+            if (j < returnColumnSizes[i] - 1) {
+                printf(", ");
+            }
+        }
+        printf("]\n");
+    }
+    
+    // Libera la memoria allocata
+    for (int i = 0; i < returnSize; i++) {
+        free(result[i]);
+    }
+    free(result);
+    free(returnColumnSizes);
+    
+    return 0;
+}

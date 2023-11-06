@@ -1,0 +1,50 @@
+complessitá esonenziale nel caso peggiore. Dipende dalle stringhe di lunghezza n
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+// Funzione per verificare se una stringa binaria è presente nell'array
+bool isPresent(char* str, char* nums[], int n) {
+    for (int i = 0; i < n; i++) {
+        if (strcmp(str, nums[i]) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Funzione di backtracking per trovare la stringa non presente
+void findString(char* result, char* nums[], int n, int index) {
+    if (index == n) {
+        result[n] = '\0'; // Aggiunge il terminatore di stringa
+        return;
+    }
+
+    // Prova ad inserire '0'
+    result[index] = '0';
+    if (!isPresent(result, nums, n)) {
+        findString(result, nums, n, index + 1);
+        return;
+    }
+
+    // Se '0' non funziona, prova con '1'
+    result[index] = '1';
+    if (!isPresent(result, nums, n)) {
+        findString(result, nums, n, index + 1);
+        return;
+    }
+}
+
+int main() {
+    int n = 3; // Lunghezza della stringa binaria
+    char* nums[] = {"001", "010", "011"}; // Esempio di array di stringhe binarie
+
+    char result[n + 1]; // +1 per il terminatore di stringa
+
+    findString(result, nums, 3, 0);
+
+    printf("Stringa non presente: %s\n", result);
+
+    return 0;
+}

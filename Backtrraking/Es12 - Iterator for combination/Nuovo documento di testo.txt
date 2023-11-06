@@ -1,0 +1,77 @@
+complessitá 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char* characters;
+    int combinationLength;
+    char* combination;
+    int index;
+    int hasNextFlag;
+} CombinationIterator;
+
+// Funzione di supporto per inizializzare la struttura dati
+CombinationIterator* combinationIteratorCreate(char* characters, int combinationLength) {
+    CombinationIterator* iterator = (CombinationIterator*)malloc(sizeof(CombinationIterator));
+    iterator->characters = characters;
+    iterator->combinationLength = combinationLength;
+    iterator->combination = (char*)malloc((combinationLength + 1) * sizeof(char));
+    iterator->combination[combinationLength] = '\0';
+    iterator->index = 0;
+    iterator->hasNextFlag = 1;
+    return iterator;
+}
+
+// Funzione di supporto per liberare la memoria
+void combinationIteratorFree(CombinationIterator* iterator) {
+    free(iterator->combination);
+    free(iterator);
+}
+
+// Funzione di supporto per il backtracking
+void generateNextCombination(CombinationIterator* iterator, int start, int depth) {
+    if (depth == iterator->combinationLength) {
+        iterator->hasNextFlag = 1;
+        return;
+    }
+
+    for (int i = start; i < strlen(iterator->characters); i++) {
+        iterator->combination[depth] = iterator->characters[i];
+        generateNextCombination(iterator, i + 1, depth + 1);
+    }
+}
+
+// Restituisce il prossimo insieme di lunghezza combinationLength in ordine lessicografico
+char* combinationIteratorNext(CombinationIterator* iterator) {
+    if (iterator->hasNextFlag) {
+        iterator->hasNextFlag = 0;
+        generateNextCombination(iterator, iterator->index, 0);
+        return iterator->combination;
+    } else {
+        return NULL;
+    }
+}
+
+// Restituisce true se c'è un prossimo insieme, altrimenti false
+int combinationIteratorHasNext(CombinationIterator* iterator) {
+    return iterator->hasNextFlag;
+}
+
+int main() {
+    CombinationIterator* iterator = combinationIteratorCreate("abc", 2);
+
+    printf("%s\n", combinationIteratorNext(iterator));    // Output: "ab"
+    printf("%d\n", combinationIteratorHasNext(iterator)); // Output: 1
+
+    printf("%s\n", combinationIteratorNext(iterator));    // Output: "ac"
+    printf("%d\n", combinationIteratorHasNext(iterator)); // Output: 1
+
+    printf("%s\n", combinationIteratorNext(iterator));    // Output: "bc"
+    printf("%d\n", combinationIteratorHasNext(iterator)); // Output: 0
+
+    combinationIteratorFree(iterator);
+
+    return 0;
+}

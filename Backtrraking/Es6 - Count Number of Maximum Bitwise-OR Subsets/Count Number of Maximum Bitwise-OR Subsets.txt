@@ -1,0 +1,39 @@
+Comlpessitá O(2^n)
+
+#include <stdio.h>
+
+int maxBitwiseOR(int* nums, int numsSize, int currentOR, int index) {
+    if (index >= numsSize) {
+        return currentOR; // Restituiamo il risultato corrente
+    }
+    
+    int includeCurrent = maxBitwiseOR(nums, numsSize, currentOR | nums[index], index + 1); // Calcoliamo l'OR includendo l'elemento corrente
+    int excludeCurrent = maxBitwiseOR(nums, numsSize, currentOR, index + 1); // Calcoliamo l'OR senza includere l'elemento corrente
+    
+    return includeCurrent > excludeCurrent ? includeCurrent : excludeCurrent; // Restituiamo il massimo tra i due
+}
+
+int countMaxBitwiseORSubsets(int* nums, int numsSize) {
+    int maxOR = maxBitwiseOR(nums, numsSize, 0, 0); // Calcoliamo il massimo OR usando la funzione di backtracking
+    int count = 0; // Inizializziamo il contatore
+
+    // Contiamo quante volte il massimo OR appare nell'array
+    for (int i = 0; i < numsSize; i++) {
+        if ((nums[i] | maxOR) == maxOR) {
+            count++;
+        }
+    }
+
+    return count; // Restituiamo il numero di subset con il massimo OR
+}
+
+int main() {
+    int nums[] = {3, 1};
+    int numsSize = 2;
+
+    int result = countMaxBitwiseORSubsets(nums, numsSize);
+
+    printf("Output: %d\n", result);
+
+    return 0;
+}

@@ -1,0 +1,110 @@
+Spiegazione del codice:
+
+La struttura TreeNode rappresenta un nodo dell'albero binario. Ogni nodo ha un valore (val) e puntatori ai figli sinistro (left) e destro (right).
+
+La funzione newNode è una funzione di utilità per creare un nuovo nodo dell'albero con il valore specificato.
+
+La funzione cloneTree è una funzione di utilità che clona un albero.
+
+La funzione generateUniqueBSTs è la funzione ricorsiva principale che genera tutti gli alberi binari di ricerca possibili con i nodi dall'intervallo [start, end].
+
+La funzione generateTrees è la funzione di interfaccia che inizializza e chiama generateUniqueBSTs.
+
+Nel main, viene chiamata la funzione generateTrees con l'input n. I risultati vengono quindi stampati.
+
+La complessità temporale di questo algoritmo è O(Catalan(n)), dove Catalan(n) è l'ennesimo numero di Catalan, che cresce esponenzialmente ma è approssimabile a O(4^n/n^(3/2)) in termini asintotici.
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definizione di una struttura per i nodi dell'albero
+typedef struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+} TreeNode;
+
+// Funzione di utilità per creare un nuovo nodo dell'albero
+TreeNode* newNode(int val) {
+    TreeNode* node = (TreeNode*)malloc(sizeof(TreeNode));
+    node->val = val;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+
+// Funzione per clonare un albero
+TreeNode* cloneTree(TreeNode* node) {
+    if (node == NULL) return NULL;
+    TreeNode* clone = newNode(node->val);
+    clone->left = cloneTree(node->left);
+    clone->right = cloneTree(node->right);
+    return clone;
+}
+
+// Funzione ricorsiva per generare tutti gli alberi binari di ricerca possibili
+void generateUniqueBSTs(int start, int end, TreeNode* parent, TreeNode*** result, int* returnSize) {
+    if (start > end) {
+        // Aggiungi l'albero corrente al risultato
+        (*result)[*returnSize] = cloneTree(parent);
+        (*returnSize)++;
+        return;
+    }
+
+    // Prova tutti i numeri dall'intervallo [start, end] come radice
+    for (int i = start; i <= end; i++) {
+        parent->val = i;
+        
+        // Genera alberi nel sottoalbero sinistro
+        if (i > start) {
+            parent->left = newNode(0);
+            generateUniqueBSTs(start, i - 1, parent->left, result, returnSize);
+        }
+        
+        // Genera alberi nel sottoalbero destro
+        if (i < end) {
+            parent->right = newNode(0);
+            generateUniqueBSTs(i + 1, end, parent->right, result, returnSize);
+        }
+        
+        // Ripristina l'albero al suo stato originale
+        parent->left = NULL;
+        parent->right = NULL;
+    }
+}
+
+TreeNode** generateTrees(int n, int* returnSize) {
+    if (n == 0) {
+        *returnSize = 0;
+        return NULL;
+    }
+
+    TreeNode** result = (TreeNode**)malloc(1000 * sizeof(TreeNode*)); // Allocazione dinamica di memoria per il risultato
+    *returnSize = 0;
+
+    generateUniqueBSTs(1, n, newNode(0), &result, returnSize);
+
+    return result;
+}
+
+int main() {
+    int n = 3;
+    int returnSize;
+
+    TreeNode** result = generateTrees(n, &returnSize);
+
+    // Stampa i risultati
+    for (int i = 0; i < returnSize; i++) {
+        // Implementa una funzione di stampa dell'albero a tua discrezione
+        // ...
+    }
+
+    // Libera la memoria allocata per il risultato
+    for (int i = 0; i < returnSize; i++) {
+        free(result[i]);
+    }
+    free(result);
+
+    return 0;
+}

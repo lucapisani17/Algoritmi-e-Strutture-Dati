@@ -1,0 +1,48 @@
+You have n  tiles, where each tile has one letter tiles[i] printed on it.
+
+Return the number of possible non-empty sequences of letters you can make using the letters printed on those tiles.
+
+complessitá O(n!)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void backtrack(char* tiles, int* visited, int* resultSize, int level) {
+    if (level > 0) {
+        (*resultSize)++; // Aumentiamo il conteggio dei risultati
+    }
+
+    for (int i = 0; i < strlen(tiles); i++) {
+        if (visited[i] == 0) { // Se il carattere non è stato ancora utilizzato
+            if (i > 0 && tiles[i] == tiles[i-1] && visited[i-1] == 0) {
+                continue; // Evitiamo duplicati
+            }
+            visited[i] = 1; // Contrassegniamo il carattere come utilizzato
+            backtrack(tiles, visited, resultSize, level + 1); // Chiamata ricorsiva per esplorare il prossimo carattere
+            visited[i] = 0; // Ripristiniamo il carattere come non utilizzato
+        }
+    }
+}
+
+int numTilePossibilities(char* tiles) {
+    int* visited = (int*)calloc(strlen(tiles), sizeof(int)); // Allochiamo la memoria per tenere traccia dei caratteri utilizzati
+    int resultSize = 0;
+
+    qsort(tiles, strlen(tiles), sizeof(char), strcmp); // Ordiniamo i caratteri per evitare duplicati
+
+    backtrack(tiles, visited, &resultSize, 0); // Chiamata iniziale alla funzione di backtracking
+
+    free(visited); // Liberiamo la memoria allocata per l'array di controllo
+
+    return resultSize; // Restituiamo il numero di sequenze possibili
+}
+
+int main() {
+    char tiles[] = "AAB";
+    int result = numTilePossibilities(tiles);
+
+    printf("Output: %d\n", result);
+
+    return 0;
+}

@@ -1,0 +1,53 @@
+Spiegazione del codice:
+
+La funzione maxUniqueSubstrings è la funzione ricorsiva principale che genera tutte le possibili suddivisioni della stringa in sottostringhe uniche.
+
+La funzione maxUniqueSubstringsWrapper è una funzione di interfaccia che inizializza un array di flag per tenere traccia dei caratteri visitati e chiama la funzione principale.
+
+Nel main, viene chiamata la funzione maxUniqueSubstringsWrapper con la stringa s e il risultato viene stampato.
+
+La complessità temporale di questo algoritmo dipende dalla struttura della stringa. Nel caso peggiore, dove tutti i caratteri sono diversi, la complessità è O(2^n), dove n è la lunghezza della stringa. Tuttavia, in casi più comuni, la complessità può essere molto inferiore a questa cifra massima.
+
+#include <stdio.h>
+#include <string.h>
+
+int maxUniqueSubstrings(char* s, int start, int* visited) {
+    int count = 0;
+
+    // Itera attraverso la stringa e prova tutte le possibili suddivisioni
+    for (int end = start; s[end] != '\0'; end++) {
+        // Controlla se la sottostringa da start a end è unica
+        int unique = 1;
+        for (int i = start; i < end; i++) {
+            if (visited[s[i] - 'a']) {
+                unique = 0;
+                break;
+            }
+        }
+
+        // Se è unica, prosegui con la ricorsione
+        if (unique) {
+            for (int i = start; i < end; i++) {
+                visited[s[i] - 'a'] = 1; // Marca i caratteri come visitati
+            }
+            count = 1 + maxUniqueSubstrings(s, end, visited);
+            for (int i = start; i < end; i++) {
+                visited[s[i] - 'a'] = 0; // Ripristina lo stato originale
+            }
+        }
+    }
+
+    return count;
+}
+
+int maxUniqueSubstringsWrapper(char* s) {
+    int visited[26] = {0}; // Inizializza un array di flag per tenere traccia dei caratteri visitati
+    return maxUniqueSubstrings(s, 0, visited);
+}
+
+int main() {
+    char s[] = "ababccc";
+    int result = maxUniqueSubstringsWrapper(s);
+    printf("%d\n", result);
+    return 0;
+}

@@ -1,0 +1,60 @@
+Spiegazione del codice:
+
+La funzione findMaxConcatenation è la funzione ricorsiva principale che cerca tutte le possibili concatenazioni di stringhe senza caratteri duplicati.
+
+La funzione maxLength è la funzione di interfaccia che inizializza e chiama findMaxConcatenation.
+
+Nel main, viene inizializzato l'array di stringhe arr e viene chiamata la funzione maxLength per ottenere la lunghezza massima della concatenazione.
+
+La complessità temporale di questo algoritmo dipende dalle dimensioni dell'array di stringhe e dalla lunghezza delle singole stringhe. Nel caso peggiore, la complessità è O(2^n), dove n è il numero di stringhe nell'array. Tuttavia, in pratica, il numero di combinazioni possibili potrebbe essere molto inferiore a questa cifra massima.
+
+
+#include <stdio.h>
+#include <string.h>
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+// Funzione ricorsiva per trovare la lunghezza massima
+int findMaxConcatenation(char** arr, int arrSize, char* current, int index) {
+    int maxLen = strlen(current);
+
+    for (int i = index; i < arrSize; i++) {
+        int duplicate = 0;
+
+        // Verifica se ci sono caratteri duplicati tra la stringa corrente e arr[i]
+        for (int j = 0; j < strlen(arr[i]); j++) {
+            if (strchr(current, arr[i][j])) {
+                duplicate = 1;
+                break;
+            }
+        }
+
+        if (!duplicate) {
+            char* newString = (char*)malloc(strlen(current) + strlen(arr[i]) + 1);
+            strcpy(newString, current);
+            strcat(newString, arr[i]);
+            maxLen = max(maxLen, findMaxConcatenation(arr, arrSize, newString, i + 1));
+            free(newString);
+        }
+    }
+
+    return maxLen;
+}
+
+int maxLength(char** arr, int arrSize) {
+    char* current = (char*)malloc(1);
+    current[0] = '\0';
+    return findMaxConcatenation(arr, arrSize, current, 0);
+}
+
+int main() {
+    char* arr[] = {"un", "iq", "ue"};
+    int arrSize = sizeof(arr) / sizeof(arr[0]);
+
+    int result = maxLength(arr, arrSize);
+    printf("Maximum length of concatenated string: %d\n", result);
+
+    return 0;
+}

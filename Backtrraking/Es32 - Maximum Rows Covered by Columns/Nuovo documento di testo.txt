@@ -1,0 +1,87 @@
+Spiegazione del codice:
+
+La funzione backtrack è la funzione ricorsiva principale che esplora tutte le possibili combinazioni di colonne e determina il massimo numero di righe che possono essere coperte.
+
+La funzione maxRowsCovered è la funzione di interfaccia che inizializza la matrice e i parametri necessari per la ricerca.
+
+Nel main, viene inizializzata una matrice con i dati dell'esempio e viene chiamata la funzione maxRowsCovered per ottenere il massimo numero di righe coperte.
+
+La complessità temporale di questo algoritmo dipende dalle dimensioni della matrice e dal numero di colonne da selezionare. Nel caso peggiore, la complessità è O(2^n), dove n è il numero di colonne. Tuttavia, in pratica, il numero di combinazioni possibili potrebbe essere molto inferiore a questa cifra massima.
+
+#include <stdio.h>
+
+// Funzione di utilità per calcolare il massimo tra due numeri
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+// Funzione ricorsiva per esplorare tutte le possibili combinazioni di colonne
+void backtrack(int** matrix, int m, int n, int numSelect, int col, int* selectedCols, int* maxRowsCovered) {
+    if (numSelect == 0) {
+        // Conta il numero di righe coperte dalla combinazione attuale
+        int rowsCovered = 0;
+        for (int i = 0; i < m; i++) {
+            int covered = 0;
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 1 && selectedCols[j] == 1) {
+                    covered = 1;
+                    break;
+                }
+            }
+            rowsCovered += covered;
+        }
+        // Aggiorna il massimo numero di righe coperte
+        *maxRowsCovered = max(*maxRowsCovered, rowsCovered);
+        return;
+    }
+
+    if (col == n) {
+        return;
+    }
+
+    // Prova a selezionare la colonna corrente
+    selectedCols[col] = 1;
+    backtrack(matrix, m, n, numSelect - 1, col + 1, selectedCols, maxRowsCovered);
+
+    // Prova a non selezionare la colonna corrente
+    selectedCols[col] = 0;
+    backtrack(matrix, m, n, numSelect, col + 1, selectedCols, maxRowsCovered);
+}
+
+int maxRowsCovered(int** matrix, int m, int n, int numSelect) {
+    int* selectedCols = (int*)malloc(n * sizeof(int));
+    int maxRowsCovered = 0;
+
+    // Inizia la ricerca
+    backtrack(matrix, m, n, numSelect, 0, selectedCols, &maxRowsCovered);
+
+    free(selectedCols);
+    return maxRowsCovered;
+}
+
+int main() {
+    int m = 4;
+    int n = 3;
+    int numSelect = 2;
+    int** matrix = (int**)malloc(m * sizeof(int*));
+    for (int i = 0; i < m; i++) {
+        matrix[i] = (int*)malloc(n * sizeof(int));
+    }
+
+    // Inizializza la matrice con i dati dell'esempio
+    matrix[0][0] = 0; matrix[0][1] = 0; matrix[0][2] = 0;
+    matrix[1][0] = 1; matrix[1][1] = 0; matrix[1][2] = 1;
+    matrix[2][0] = 0; matrix[2][1] = 1; matrix[2][2] = 1;
+    matrix[3][0] = 0; matrix[3][1] = 0; matrix[3][2] = 1;
+
+    int result = maxRowsCovered(matrix, m, n, numSelect);
+    printf("Maximum number of rows covered: %d\n", result);
+
+    // Libera la memoria allocata
+    for (int i = 0; i < m; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
+
+    return 0;
+}
