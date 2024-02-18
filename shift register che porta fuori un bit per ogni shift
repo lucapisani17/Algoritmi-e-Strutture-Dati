@@ -1,0 +1,50 @@
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity shift_register is
+    port(CLK, RST : in std_logic;
+         SI: IN std_logic_vector(3 downto 0);
+         shift: in std_logic;
+         load: in std_logic;
+         SO : out std_logic);
+end shift_register;
+
+architecture archi of shift_register is
+    signal tmp: std_logic_vector(3 downto 0);
+    SIGNAL shiftedbit: std_logic;
+begin
+
+    process (CLK)
+    begin
+        if (CLK'event and CLK='1') then
+            if (RST='1') then
+                tmp <= (others=>'0');
+            else
+                if load='1' then 
+                tmp<=SI;
+                end if;
+                
+                if(shift) = '1' then
+                        shiftedbit<=tmp(0);
+                        tmp<='0' & tmp(3 downto 1);
+                end if;
+            
+            end if;
+         end if;
+        --SO <= tmp(3);  --se inserisco qui questa istruzione, il valore di SO è aggiornato alla prossima
+                       --attivazione del process, quindi sul fronte di discesa successivo a quando è stato
+                       --aggiornato tmp(3)
+      end process;
+      SO <= shiftedbit;  --se inserisco qui questa istruzione, il valore di SO viene aggiornato continuamente
+                       --in maniera concorrente
+    
+
+end archi;
+
+				
+				
