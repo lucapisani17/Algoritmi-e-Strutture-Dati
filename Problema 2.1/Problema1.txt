@@ -1,0 +1,128 @@
+//COMPLESSITÁ: O(nlogn)
+
+
+#include <stdio.h>
+#include <string.h>
+
+#define END 69
+
+int calcoloSommaPiuGrande(int array[], int inizio, int fine){
+    //copro il caso in cui il mio array ha un solo elemento ritornando l'elemento stesso
+    if (inizio == fine) {
+        return array[inizio];
+    }
+    
+    int centro = (inizio + fine)/2;
+    
+     // Trova la somma massima di un sottoarray a sinistra del centro
+    int sommaSinistra =  calcoloSommaPiuGrande(array, inizio, centro);
+
+    // Trova la somma massima di un sottoarray a destra del centro
+    int sommaDestra = calcoloSommaPiuGrande(array, centro + 1, fine);
+    
+    // Trova la somma massima di un sottoarray che attraversa il centro
+    int sommaAttraversoIlCentro = 0;
+    int sommaTemp = 0;
+
+    // Trova la somma massima a sinistra del centro
+    for (int i = centro; i >= inizio; i--) {
+        sommaTemp += array[i];
+        if (sommaTemp > sommaAttraversoIlCentro) {
+            sommaAttraversoIlCentro = sommaTemp;
+        }
+    }
+
+    // Resetta la variabile temporanea
+    sommaTemp = 0;
+    
+     // Trova la somma massima a destra del centro
+    for (int i = centro + 1; i <= fine; i++) {
+        sommaTemp += array[i];
+        if (sommaTemp > sommaAttraversoIlCentro) {
+            sommaAttraversoIlCentro = sommaTemp;
+        }
+    }
+    
+      // Restituisci la somma massima tra i tre casi
+    return (sommaSinistra > sommaDestra)
+        ? (sommaSinistra > sommaAttraversoIlCentro ? sommaSinistra : sommaAttraversoIlCentro)
+        : (sommaDestra > sommaAttraversoIlCentro ? sommaDestra : sommaAttraversoIlCentro);
+}
+    
+
+
+
+int main() {
+    FILE *file;
+    int array[100]; // Supponiamo un array di massimo 100 elementi
+    int lunghezzaArray=0;
+
+    file = fopen("input.txt", "r");
+    if (file == NULL) {
+        fprintf(stderr, "Impossibile aprire il file.\n");
+        return 1; // errore
+    }
+    
+    char ws = ' ';
+    int num = 0;
+    int result;
+    
+   
+    
+    while ( result = fscanf ( file, "%d%c", &num, &ws)) {
+        
+        
+        if ( 2 == result && ' ' == ws) {//scanno intero e spazio
+        array[lunghezzaArray]=num;
+        lunghezzaArray++;
+        
+        
+        while ( 2 == fscanf ( file, "%d%c", &num, &ws)) {
+            array[lunghezzaArray]=num;
+            lunghezzaArray++;
+            if ( '\n' == ws) {//esco se scanno una newline
+                break;
+            }
+            
+        //Verifica se l'array è vuoto
+            if (lunghezzaArray == 0) {
+                if (feof(file)) {
+                // Fine del file
+                break;
+                } else {
+                // Errore di lettura
+                fprintf(stderr, "Errore nella lettura del file.\n");
+                break;
+                }
+            }
+            
+        }
+        
+        
+         // Stampa gli elementi dell'array
+        printf("Elementi dell'array letti dal file:\n");
+        for (int i = 0; i < lunghezzaArray; i++) {
+            printf("%d ", array[i]);
+        }
+
+        printf("\n");
+        int somma = calcoloSommaPiuGrande(array, 0, lunghezzaArray - 1);
+        printf("La somma più grande risulta essere: %d\n\n", somma);
+        
+        lunghezzaArray=0;
+    }
+    
+}
+        
+        fscanf (file, "%c",&ws);
+        if(END == ws){
+        printf("É STATA LETTA LA PAROLE DI TERMINAZIONE 'END'");
+        }
+
+
+
+    fclose(file);
+    
+    return 0;
+
+}

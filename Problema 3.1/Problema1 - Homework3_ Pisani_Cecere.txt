@@ -1,0 +1,84 @@
+//COMPLESSITÁ O(n⋅somma totale dei valori), dove n è il numero di monete e la somma totale dei valori rappresenta la somma di tutti i valori delle monete
+
+#include <stdio.h>
+
+int dinamica(int valori[], int numero_monete){
+    //calcolo la somma totale dei valori delle monete
+    int sum = 0;
+    for (int i = 0; i < numero_monete; i++) {
+        sum += valori[i];
+    }
+    
+    // Creo la matrice dove salvare i sottoproblemi e inizializzo prima colonna e riga
+    int dp[numero_monete + 1][sum + 1];
+
+    for (int i = 0; i <= numero_monete; i++) {
+        dp[i][0] = 1; // Indica che è possibile ottenere somma 0
+    }
+
+    for (int i = 1; i <= sum; i++) {
+        dp[0][i] = 0; // Indica che non è possibile ottenere somma i senza monete
+    }
+        
+    //Calcolo tutte le somme possibili tra le monete
+    for (int i = 1; i <= numero_monete; i++) {
+        for (int j = 1; j <= sum; j++) {
+            if (valori[i - 1] > j) {
+                dp[i][j] = dp[i - 1][j];
+            } else {
+                dp[i][j] = dp[i - 1][j] || dp[i - 1][j - valori[i - 1]];
+            }
+        }
+    }
+    
+    //Trovo la somma printfu grande ma minore o uguale a sum/2
+    int diff = sum;
+    for (int i = sum/2; i >= 0; i--) {
+        if (dp[numero_monete][i]) {
+            diff = sum - 2 * i;
+            break;
+        }
+    }
+    return diff;
+}
+
+int main()
+{
+     FILE* file = fopen("input.txt", "r"); // Apri il file in modalità di lettura
+
+    if (!file) {
+        fprintf(stderr, "Impossibile aprire il file input.txt\n");
+        return 1;
+    }
+
+    int numCasiDiTest;
+    fscanf(file, "%d", &numCasiDiTest);
+    
+    fgetc(file); // Ignora il carattere newline dopo il numero di casi di test
+    
+while(numCasiDiTest--){
+    
+    int numero_monete=0;
+    
+    fscanf(file, "%d", &numero_monete);
+    printf("Numero delle monete: %d\n",numero_monete);
+    
+    int valori[numero_monete];
+    
+    for(int i=0; i<numero_monete; i++){
+        fscanf(file, "%d", &valori[i]);
+    }
+    
+    printf("Hai %d monete ed il loro valore e': \n",numero_monete);
+    for(int i=0; i<numero_monete; i++){
+        printf("%d\n", valori[i]);
+    }
+
+    int diff = dinamica(valori, numero_monete);
+    printf("la differenza tra il valore che i due ladri ottengono é: \n");
+    printf("%d\n\n", diff);
+
+
+}
+return 0;
+}

@@ -1,0 +1,106 @@
+Complessitá: O(N^N)
+
+#include <stdio.h>
+
+int soluzioni_trovate = 0;
+    
+
+//funzione di controllo soluzione
+int isSolution(int N, int scacchiera[][N], int riga, int colonna) {
+    int i, j;
+
+    // Controlla la riga sulla sinistra
+    for (i = 0; i < colonna; i++) {
+        if (scacchiera[riga][i])
+            return 0;
+    }
+
+    // Controlla la diagonale superiore sinistra
+    for (i = riga, j = colonna; i >= 0 && j >= 0; i--, j--) {
+        if (scacchiera[i][j])
+            return 0;
+    }
+
+    // Controlla la diagonale inferiore sinistra
+    for (i = riga, j = colonna; j >= 0 && i < N; i++, j--) {
+        if (scacchiera[i][j])
+            return 0;
+    }
+
+    return 1;
+}
+
+//funzione risouluzione principale
+int risolviNRegine(int N, int scacchiera[][N], int colonna) {
+    if (colonna >= N) {
+        soluzioni_trovate++; // Incrementa il contatore delle soluzioni trovate
+        return 1;
+    }
+
+    int trovata = 0;
+    for (int i = 0; i < N; i++) {
+        if (isSolution(N, scacchiera, i, colonna)) {
+            scacchiera[i][colonna] = 1;
+
+            if (risolviNRegine(N, scacchiera, colonna + 1))
+                trovata = 1;
+
+            scacchiera[i][colonna] = 0; // Backtracking
+        }
+    }
+
+    return trovata;
+}
+
+void nRegine(int N) {
+    int scacchiera[N][N];
+        //Riempio la scacchiera con tutti 0
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            scacchiera[i][j]=0;
+        }
+    }
+
+
+    if (risolviNRegine(N, scacchiera, 0) == 0) {
+        printf("Nessuna soluzione trovata per %d regine.\n", N);
+        return;
+    }
+
+}
+
+int main() {
+    
+    FILE *file;
+    int N;
+    int t=0;
+
+    file = fopen("input.txt", "r");
+    if (file == NULL) {
+        fprintf(stderr, "Impossibile aprire il file.\n");
+        return 1; // errore
+    }
+    
+    //leggo il numero di casi di test
+     if (fscanf(file, "%d", &t) != 1) {
+        printf("Errore nella lettura del numero.\n");
+        return 1;
+    }
+    while(t!=-1){
+    // Leggiamo N da file
+    if (fscanf(file, "%d", &N) != 1) {
+        printf("Errore nella lettura del numero.\n");
+        return 1;
+    }
+    
+    printf("Numero di regine: %d ", N);
+    soluzioni_trovate = 0; // Resetta il contatore per ogni valore di N
+    nRegine(N);
+    printf("Numero totale di soluzioni: %d\n", soluzioni_trovate);
+    
+    }
+    
+    return 0;
+        
+
+}

@@ -1,0 +1,116 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Funzione per trovare il prefisso comune tra due stringhe
+char* trovaPrefisso(char* str1, char* str2) {
+    int len1 = strlen(str1);
+    int len2 = strlen(str2);
+    int minLen = (len1 < len2) ? len1 : len2; // Trova la lunghezza minima tra le due stringhe
+    char* prefisso = (char*)malloc((minLen + 1) * sizeof(char)); // Alloca memoria per il prefisso
+
+    int i;
+    for (i = 0; i < minLen && str1[i] == str2[i]; i++) {
+        prefisso[i] = str1[i]; // Copia i caratteri comuni nel prefisso
+    }
+
+    prefisso[i] = '\0'; // Aggiungi il terminatore di stringa
+    return prefisso;
+}
+
+// Funzione ricorsiva per trovare il prefisso comune più lungo in un array di stringhe
+char* trovaPrefissoComune(char* strArray[], int left, int right) {
+    if (left == right) {
+        return strArray[left]; // Se c'è solo una stringa, restituiscila come prefisso
+    }
+
+    int mid = (left + right) / 2;
+
+    char* prefissoLeft = trovaPrefissoComune(strArray, left, mid);
+    char* prefissoRight = trovaPrefissoComune(strArray, mid + 1, right);
+
+    return trovaPrefisso(prefissoLeft, prefissoRight); // Trova il prefisso comune tra i prefissi a sinistra e a destra
+}
+
+int main() {
+    FILE* file = fopen("input.txt", "r"); // Apri il file in modalità di lettura
+
+    if (!file) {
+        fprintf(stderr, "Impossibile aprire il file input.txt\n");
+        return 1;
+    }
+
+    int numCasiDiTest;
+    fscanf(file, "%d", &numCasiDiTest);
+
+    fgetc(file); // Ignora il carattere newline dopo il numero di casi di test
+
+    for (int test = 0; test < numCasiDiTest; test++) {
+        char* strArray[100];
+        int numStringhe = 0;
+
+        while (1) {
+            char input[1000];
+            fscanf(file, "%[^\n]", input);
+            fgetc(file); // Ignora il carattere newline dopo la stringa
+
+            if (input[0] == '&')
+                break;
+
+            strArray[numStringhe] = strdup(input);
+            numStringhe++;
+        }
+
+        char* prefissoComune = trovaPrefissoComune(strArray, 0, numStringhe - 1);
+        printf("%s\n", prefissoComune);
+
+        for (int i = 0; i < numStringhe; i++) {
+            free(strArray[i]);
+        }
+        free(prefissoComune);
+    }
+
+    fclose(file); // Chiudi il file dopo aver finito di leggere i dati
+
+    return 0;
+}
+
+/*La funzione trovaPrefisso calcola le lunghezze delel stringhe in input e ne alloca di onseguenza memoria in O(1). Esegue un loop
+che prosegue fino alla lunghezza minima tra le due striunghe o fino a quando i caratteri corrispondendi tono uguali per poi restituire un array nuovo di caratteri
+contenente il prefisso: (O(min(n,m))).
+La funzione trovaPrefissoComune é ricorsiva: se la differenza tra left e right é 0, quindi c'é solo una stringa, la funziona restituisce la stessa stringa O(1).
+In caso contrario l'intervallo viene diviso in due parti e la funzione viene richiamata sulle due metá e T(n) risulta la complessitá totale con input di dimensione n.
+Nel main: la funzione di lettura da file ha tempo costante, il loop esterno che scandisce i casi di test esegue un certo numero di operazioni costanti e chiamate alla funzione trovaPrefissoomune, per cui la complessitá dipenderá
+da quanti casi di test cisono e dala dimensione delle stringhe di ognuno.
+Approssimativamente la complessitá sará pari a O(t*n*m) con t numero totale di casi di test, n somma della lunghezza delle stringe ed m lunghezza massima delle stringhe.
+*/
+
+/*casi di test da aggiungere ad un file input.txt
+INPUT
+4
+
+apple
+ape
+april
+applied
+&
+dialogue
+diagnose
+dialect
+&
+contravene
+contrary
+contrapuntal
+&
+circumvent
+circumscribe
+circumference
+circumnavigate
+&
+
+OUTPUT
+ap
+dia
+contra
+circum
+*/
