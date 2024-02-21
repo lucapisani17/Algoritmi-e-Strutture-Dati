@@ -1,0 +1,167 @@
+//TRACCIA = Given the head of a singly linked list where elements are sorted in ascending order, convert it to a 
+height-balanced
+ binary search tree.
+//divide et impera sotto complessitá O(n + m).
+
+#include stdio.h
+#include stdlib.h
+
+ Definition for singly-linked list.
+struct ListNode {
+    int val;
+    struct ListNode next;
+};
+
+ Definition for a binary tree node.
+struct TreeNode {
+    int val;
+    struct TreeNode left;
+    struct TreeNode right;
+};
+
+struct TreeNode sortedListToBST(struct ListNode head) {
+    if (head == NULL)
+        return NULL;
+
+    if (head-next == NULL) {
+        struct TreeNode root = (struct TreeNode)malloc(sizeof(struct TreeNode));
+        root-val = head-val;
+        root-left = NULL;
+        root-right = NULL;
+        return root;
+    }
+
+    struct ListNode slow = head;
+    struct ListNode fast = head;
+    struct ListNode prev = NULL;
+
+    while (fast != NULL && fast-next != NULL) {
+        prev = slow;
+        slow = slow-next;
+        fast = fast-next-next;
+    }
+
+    if (prev != NULL)
+        prev-next = NULL;
+
+    struct TreeNode root = (struct TreeNode)malloc(sizeof(struct TreeNode));
+    root-val = slow-val;
+    root-left = sortedListToBST(head);
+    root-right = sortedListToBST(slow-next);
+
+    return root;
+}
+
+void printTree(struct TreeNode root) {
+    if (root == NULL)
+        return;
+
+    printTree(root-left);
+    printf(%d , root-val);
+    printTree(root-right);
+}
+
+int main() {
+    struct ListNode head = (struct ListNode)malloc(sizeof(struct ListNode));
+    head-val = 1;
+    head-next = (struct ListNode)malloc(sizeof(struct ListNode));
+    head-next-val = 2;
+    head-next-next = (struct ListNode)malloc(sizeof(struct ListNode));
+    head-next-next-val = 3;
+    head-next-next-next = (struct ListNode)malloc(sizeof(struct ListNode));
+    head-next-next-next-val = 4;
+    head-next-next-next-next = (struct ListNode)malloc(sizeof(struct ListNode));
+    head-next-next-next-next-val = 5;
+    head-next-next-next-next-next = NULL;
+
+    struct TreeNode root = sortedListToBST(head);
+
+    printf(In-order traversal of the BST );
+    printTree(root);
+
+    return 0;
+}
+
+--- APPROCCIO DIVIDE ET IMPERA ------------ 
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definizione per la struttura del nodo di una lista concatenata
+struct ListNode {
+    int val;
+    struct ListNode* next;
+};
+
+// Definizione per la struttura del nodo di un albero binario
+struct TreeNode {
+    int val;
+    struct TreeNode* left;
+    struct TreeNode* right;
+};
+
+// Funzione per creare un nuovo nodo della lista concatenata
+struct ListNode* newListNode(int val) {
+    struct ListNode* node = (struct ListNode*)malloc(sizeof(struct ListNode));
+    node->val = val;
+    node->next = NULL;
+    return node;
+}
+
+// Funzione per creare un nuovo nodo dell'albero binario
+struct TreeNode* newTreeNode(int val) {
+    struct TreeNode* node = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    node->val = val;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+
+// Funzione che converte una lista concatenata ordinata in un albero binario bilanciato
+struct TreeNode* sortedListToBST(struct ListNode* head, int start, int end) {
+    if (start > end) {
+        return NULL;
+    }
+
+    int mid = (start + end) / 2;
+
+    // Trova il nodo medio nella lista
+    struct ListNode* current = head;
+    for (int i = start; i < mid; i++) {
+        current = current->next;
+    }
+
+    // Crea un nuovo nodo dell'albero con il valore del nodo medio
+    struct TreeNode* root = newTreeNode(current->val);
+
+    // Ricostruisci l'albero ricorsivamente per le sotto-liste sinistra e destra
+    root->left = sortedListToBST(head, start, mid - 1);
+    root->right = sortedListToBST(current->next, mid + 1, end);
+
+    return root;
+}
+
+// Funzione per stampare l'albero in ordine
+void printTree(struct TreeNode* root) {
+    if (root == NULL) {
+        return;
+    }
+
+    printTree(root->left);
+    printf("%d ", root->val);
+    printTree(root->right);
+}
+
+int main() {
+    struct ListNode* head = newListNode(1);
+    head->next = newListNode(2);
+    head->next->next = newListNode(3);
+    head->next->next->next = newListNode(4);
+    head->next->next->next->next = newListNode(5);
+
+    struct TreeNode* root = sortedListToBST(head, 0, 4);
+
+    printf("In-order traversal of the BST: ");
+    printTree(root);
+
+    return 0;
+}

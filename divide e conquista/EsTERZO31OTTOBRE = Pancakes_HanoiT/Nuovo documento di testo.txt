@@ -1,0 +1,69 @@
+O(n^2)
+
+#include <stdio.h>
+
+#define MAX_PANCAKES 30
+
+void printStack(int stack[], int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%d ", stack[i]);
+    }
+    printf("\n");
+}
+
+void flip(int stack[], int position) {
+    int temp;
+    for (int i = 0; i < position / 2; i++) {
+        temp = stack[i];
+        stack[i] = stack[position - i - 1];
+        stack[position - i - 1] = temp;
+    }
+}
+
+void sortPancakes(int stack[], int size) {
+    int sortedSize = size;
+    while (sortedSize > 1) {
+        int maxIndex = 0;
+        for (int i = 1; i < sortedSize; i++) {
+            if (stack[i] > stack[maxIndex]) {
+                maxIndex = i;
+            }
+        }
+        if (maxIndex != sortedSize - 1) {
+            if (maxIndex != 0) {
+                flip(stack, maxIndex + 1);
+                printf("%d ", maxIndex + 1);
+            }
+            flip(stack, sortedSize);
+            printf("%d ", sortedSize);
+        }
+        sortedSize--;
+    }
+    printf("0\n");
+}
+
+int main() {
+    int stacks[MAX_PANCAKES][MAX_PANCAKES];
+    int stackSizes[MAX_PANCAKES];
+    int numStacks = 0;
+
+    // Leggi gli stack di pancake
+    while (scanf("%d", &stacks[numStacks][0]) != EOF) {
+        int pancake;
+        int size = 1;
+        while (scanf("%d", &pancake) && pancake != 0) {
+            stacks[numStacks][size] = pancake;
+            size++;
+        }
+        stackSizes[numStacks] = size;
+        numStacks++;
+    }
+
+    // Ordina e stampa gli stack
+    for (int i = 0; i < numStacks; i++) {
+        printStack(stacks[i], stackSizes[i]);
+        sortPancakes(stacks[i], stackSizes[i]);
+    }
+
+    return 0;
+}

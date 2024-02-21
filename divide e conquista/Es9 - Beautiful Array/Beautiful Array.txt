@@ -1,0 +1,163 @@
+//APPROCCIO DIVIDE ET IMPERA SOTTO complessitá O(nlogn)
+
+
+//TRACCIA = An array nums of length n is beautiful if:
+
+nums is a permutation of the integers in the range [1, n].
+For every 0 <= i < j < n, there is no index k with i < k < j where 2 * nums[k] == nums[i] + nums[j].
+Given the integer n, return any beautiful array nums of length n. There will be at least one valid answer for the given n.
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int* beautifulArray(int n, int* returnSize) {
+    int* result = (int*)malloc(n * sizeof(int));
+    *returnSize = n;
+
+    if (n == 1) {
+        result[0] = 1;
+        return result;
+    }
+
+    int* odd = (int*)malloc(n * sizeof(int));
+    int* even = (int*)malloc(n * sizeof(int));
+
+    int oddCount = 0;
+    int evenCount = 0;
+
+    for (int i = 1; i <= n; i++) {
+        if (i % 2 == 1) {
+            odd[oddCount++] = i;
+        } else {
+            even[evenCount++] = i;
+        }
+    }
+
+    for (int i = 0; i < oddCount; i++) {
+        result[i] = odd[i];
+    }
+
+    for (int i = 0; i < evenCount; i++) {
+        result[oddCount + i] = even[i];
+    }
+
+    free(odd);
+    free(even);
+
+    return result;
+}
+
+int main() {
+    int n1 = 4;
+    int returnSize1;
+    int* beautifulArr1 = beautifulArray(n1, &returnSize1);
+
+    printf("For n = %d: [", n1);
+    for (int i = 0; i < returnSize1; i++) {
+        printf("%d", beautifulArr1[i]);
+        if (i < returnSize1 - 1) {
+            printf(", ");
+        }
+    }
+    printf("]\n");
+
+    free(beautifulArr1);
+
+    int n2 = 5;
+    int returnSize2;
+    int* beautifulArr2 = beautifulArray(n2, &returnSize2);
+
+    printf("For n = %d: [", n2);
+    for (int i = 0; i < returnSize2; i++) {
+        printf("%d", beautifulArr2[i]);
+        if (i < returnSize2 - 1) {
+            printf(", ");
+        }
+    }
+    printf("]\n");
+
+    free(beautifulArr2);
+
+    return 0;
+}
+
+--------------------------------------------------------------------------------------divide t impera------------------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int* mergeArrays(int* arr1, int size1, int* arr2, int size2) {
+    int* result = (int*)malloc((size1 + size2) * sizeof(int));
+
+    int i = 0, j = 0, k = 0;
+
+    while (i < size1 && j < size2) {
+        result[k++] = arr1[i++];
+        result[k++] = arr2[j++];
+    }
+
+    while (i < size1) {
+        result[k++] = arr1[i++];
+    }
+
+    while (j < size2) {
+        result[k++] = arr2[j++];
+    }
+
+    return result;
+}
+
+int* beautifulArray(int n, int* returnSize) {
+    *returnSize = n;
+
+    if (n == 1) {
+        int* result = (int*)malloc(sizeof(int));
+        result[0] = 1;
+        return result;
+    }
+
+    int leftSize = (n + 1) / 2;
+    int* left = beautifulArray(leftSize, returnSize);
+
+    int rightSize = n / 2;
+    int* right = beautifulArray(rightSize, returnSize);
+
+    return mergeArrays(left, leftSize, right, rightSize);
+}
+
+int main() {
+    int n1 = 4;
+    int returnSize1;
+    int* beautifulArr1 = beautifulArray(n1, &returnSize1);
+
+    printf("For n = %d: [", n1);
+    for (int i = 0; i < returnSize1; i++) {
+        printf("%d", beautifulArr1[i]);
+        if (i < returnSize1 - 1) {
+            printf(", ");
+        }
+    }
+    printf("]\n");
+
+    free(beautifulArr1);
+
+    int n2 = 5;
+    int returnSize2;
+    int* beautifulArr2 = beautifulArray(n2, &returnSize2);
+
+    printf("For n = %d: [", n2);
+    for (int i = 0; i < returnSize2; i++) {
+        printf("%d", beautifulArr2[i]);
+        if (i < returnSize2 - 1) {
+            printf(", ");
+        }
+    }
+    printf("]\n");
+
+    free(beautifulArr2);
+
+    return 0;
+}
+

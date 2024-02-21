@@ -1,0 +1,101 @@
+Approccio divide et impera
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Struttura per rappresentare un punto
+typedef struct {
+    int x; // Coordinata x
+    int y; // Altezza y
+} Point;
+
+// Struttura per rappresentare un edificio
+typedef struct {
+    int left;   // Coordinata x sinistra
+    int right;  // Coordinata x destra
+    int height; // Altezza
+} Building;
+
+// Funzione per unire due skyline in un nuovo skyline
+Point* mergeSkyline(Point* leftSkyline, int leftSize, Point* rightSkyline, int rightSize, int* mergedSize) {
+    int leftH = 0, rightH = 0;
+    int i = 0, j = 0, h, maxH;
+
+    *mergedSize = 0;
+    Point* mergedSkyline = (Point*)malloc(sizeof(Point) * (leftSize + rightSize));
+
+    while (i < leftSize && j < rightSize) {
+        if (leftSkyline[i].x < rightSkyline[j].x) {
+            h = leftSkyline[i].y;
+            i++;
+        } else if (leftSkyline[i].x > rightSkyline[j].x) {
+            h = rightSkyline[j].y;
+            j++;
+        } else {
+            h = leftSkyline[i].y > rightSkyline[j].y ? leftSkyline[i].y : rightSkyline[j].y;
+            i++;
+            j++;
+        }
+
+        if (*mergedSize == 0 || h != mergedSkyline[*mergedSize - 1].y) {
+            mergedSkyline[*mergedSize].x = leftSkyline[i - 1].x;
+            mergedSkyline[*mergedSize].y = h;
+            (*mergedSize)++;
+        }
+    }
+
+    while (i < leftSize) {
+        mergedSkyline[*mergedSize] = leftSkyline[i];
+        (*mergedSize)++;
+        i++;
+    }
+
+    while (j < rightSize) {
+        mergedSkyline[*mergedSize] = rightSkyline[j];
+        (*mergedSize)++;
+        j++;
+    }
+
+    free(leftSkyline);
+    free(rightSkyline);
+
+    return mergedSkyline;
+}
+
+// Funzione principale per risolvere il problema usando l'approccio "Divide and Conquer with Heap"
+Point* skyline(Building* buildings, int left, int right, int* skylineSize) {
+    if (left == right) {
+        Point* result = (Point*)malloc(sizeof(Point) * 2);
+        result[0].x = buildings[left].left;
+        result[0].y = buildings[left].height;
+        result[1].x = buildings[left].right;
+        result[1].y = 0;
+        *skylineSize = 2;
+        return result;
+    }
+
+    int mid = left + (right - left) / 2;
+    int leftSize, rightSize;
+
+    Point* leftSkyline = skyline(buildings, left, mid, &leftSize);
+    Point* rightSkyline = skyline(buildings, mid + 1, right, &rightSize);
+
+    return mergeSkyline(leftSkyline, leftSize, rightSkyline, rightSize, skylineSize);
+}
+
+int main() {
+    Building buildings[] = {{2, 9, 10}, {3, 7, 15}, {5, 12, 12}, {15, 20, 10}, {19, 24, 8}};
+    int numBuildings = sizeof(buildings) / sizeof(buildings[0]);
+
+    int skylineSize;
+    Point* result = skyline(buildings, 0, numBuildings - 1, &skylineSize);
+
+    printf("Skyline Points:\n");
+    for (int i = 0; i < skylineSize; i++) {
+        printf("[%d, %d]\n", result[i].x, result[i].y);
+    }
+
+    free(result);
+
+    return 0;
+}

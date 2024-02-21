@@ -1,0 +1,115 @@
+//APPROCCIO DIVIDE ET IMPERA. complessitá  la complessità temporale dell'algoritmo è O(n^2) nel caso peggiore
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Definition for a binary tree node
+struct TreeNode {
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+
+TreeNode* buildTreeHelper(vector<int>& preorder, int preStart, int preEnd, vector<int>& inorder, int inStart, int inEnd) {
+    if (preStart > preEnd || inStart > inEnd) return NULL;
+
+    int rootValue = preorder[preStart];
+    int rootIndexInorder;
+    for (int i = inStart; i <= inEnd; i++) {
+        if (inorder[i] == rootValue) {
+            rootIndexInorder = i;
+            break;
+        }
+    }
+
+    int leftSubtreeSize = rootIndexInorder - inStart;
+    TreeNode* root = new TreeNode(rootValue);
+    root->left = buildTreeHelper(preorder, preStart + 1, preStart + leftSubtreeSize, inorder, inStart, rootIndexInorder - 1);
+    root->right = buildTreeHelper(preorder, preStart + leftSubtreeSize + 1, preEnd, inorder, rootIndexInorder + 1, inEnd);
+
+    return root;
+}
+
+TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+    return buildTreeHelper(preorder, 0, preorder.size() - 1, inorder, 0, inorder.size() - 1);
+}
+
+// Helper function to print the tree (for testing purposes)
+void printTree(TreeNode* root) {
+    if (root == NULL) return;
+    printTree(root->left);
+    cout << root->val << " ";
+    printTree(root->right);
+}
+
+int main() {
+    vector<int> preorder = {3, 9, 20, 15, 7};
+    vector<int> inorder = {9, 3, 15, 20, 7};
+
+    TreeNode* root = buildTree(preorder, inorder);
+
+    // Print the constructed tree (for testing purposes)
+    printTree(root);
+
+    return 0;
+}
+
+----------------------------------------- VARIANTE CON POSTORDER E INORDER O(n) ---------------------------------------------------------
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Definition for a binary tree node
+struct TreeNode {
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+};
+
+TreeNode* buildTreeHelper(vector<int>& inorder, int inStart, int inEnd, vector<int>& postorder, int postStart, int postEnd) {
+    if (inStart > inEnd || postStart > postEnd) return NULL;
+
+    int rootValue = postorder[postEnd];
+    int rootIndexInorder;
+    for (int i = inStart; i <= inEnd; i++) {
+        if (inorder[i] == rootValue) {
+            rootIndexInorder = i;
+            break;
+        }
+    }
+
+    int rightSubtreeSize = inEnd - rootIndexInorder;
+    TreeNode* root = new TreeNode(rootValue);
+    root->right = buildTreeHelper(inorder, rootIndexInorder + 1, inEnd, postorder, postEnd - rightSubtreeSize, postEnd - 1);
+    root->left = buildTreeHelper(inorder, inStart, rootIndexInorder - 1, postorder, postStart, postEnd - rightSubtreeSize - 1);
+
+    return root;
+}
+
+TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+    return buildTreeHelper(inorder, 0, inorder.size() - 1, postorder, 0, postorder.size() - 1);
+}
+
+// Helper function to print the tree (for testing purposes)
+void printTree(TreeNode* root) {
+    if (root == NULL) return;
+    printTree(root->left);
+    printTree(root->right);
+    cout << root->val << " ";
+}
+
+int main() {
+    vector<int> inorder = {9, 3, 15, 20, 7};
+    vector<int> postorder = {9, 15, 7, 20, 3};
+
+    TreeNode* root = buildTree(inorder, postorder);
+
+    // Print the constructed tree (for testing purposes)
+    printTree(root);
+
+    return 0;
+}

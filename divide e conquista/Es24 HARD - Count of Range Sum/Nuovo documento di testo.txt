@@ -1,0 +1,52 @@
+approccio dei
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int countRangeSums(int* nums, int numsSize, int lower, int upper, int start, int end) {
+    if (start == end) {
+        return (nums[start] >= lower && nums[start] <= upper) ? 1 : 0;
+    }
+
+    int mid = (start + end) / 2;
+    int count = 0;
+
+    int* prefixSum = (int*)malloc((end - start + 1) * sizeof(int));
+    prefixSum[0] = nums[start];
+    for (int i = 1; i <= end - start; i++) {
+        prefixSum[i] = prefixSum[i - 1] + nums[start + i];
+    }
+
+    for (int i = mid + 1; i <= end; i++) {
+        for (int j = start; j <= mid; j++) {
+            int sum = prefixSum[i - start] - (j > start ? prefixSum[j - 1 - start] : 0);
+            if (sum >= lower && sum <= upper) {
+                count++;
+            }
+        }
+    }
+
+    count += countRangeSums(nums, numsSize, lower, upper, start, mid);
+    count += countRangeSums(nums, numsSize, lower, upper, mid + 1, end);
+
+    free(prefixSum);
+
+    return count;
+}
+
+int countRangeSum(int* nums, int numsSize, int lower, int upper) {
+    return countRangeSums(nums, numsSize, lower, upper, 0, numsSize - 1);
+}
+
+int main() {
+    int nums[] = {-2, 5, -1};
+    int numsSize = sizeof(nums) / sizeof(nums[0]);
+    int lower = -2;
+    int upper = 2;
+
+    int result = countRangeSum(nums, numsSize, lower, upper);
+
+    printf("Number of range sums in [%d, %d]: %d\n", lower, upper, result);
+
+    return 0;
+}

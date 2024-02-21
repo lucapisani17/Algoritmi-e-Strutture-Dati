@@ -1,0 +1,106 @@
+//TRACCIA = You are given a 2D matrix of size m x n, consisting of non-negative integers. You are also given an integer k.
+The value of coordinate (a, b) of the matrix is the XOR of all matrix[i][j] where 0 <= i <= a < m and 0 <= j <= b < n (0-indexed).
+Find the kth largest value (1-indexed) of all the coordinates of matrix.
+
+//APPROCCIO DIVIDE ET IMPERA SOTTO
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int countXOR(vector<vector<int>>& matrix, int mid) {
+    int m = matrix.size();
+    int n = matrix[0].size();
+    vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            dp[i][j] = dp[i - 1][j] ^ dp[i][j - 1] ^ dp[i - 1][j - 1] ^ matrix[i - 1][j - 1];
+        }
+    }
+
+    int count = 0;
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (dp[i][j] >= mid)
+                count++;
+        }
+    }
+
+    return count;
+}
+
+int kthLargestValue(vector<vector<int>>& matrix, int k) {
+    int low = 0, high = INT_MAX;
+
+    while (low < high) {
+        int mid = low + (high - low) / 2;
+        if (countXOR(matrix, mid) >= k)
+            low = mid + 1;
+        else
+            high = mid;
+    }
+
+    return low - 1;
+}
+
+int main() {
+    vector<vector<int>> matrix = {{5, 2}, {1, 6}};
+    int k = 2;
+
+    int result = kthLargestValue(matrix, k);
+
+    cout << "The " << k << "th largest value is: " << result << endl;
+
+    return 0;
+}
+
+-----------DIVIDE ET IMPERA IN C-------- complessitá dipende dalla matrice
+
+#include <stdio.h>
+
+int countXOR(int matrix[2][2], int mid) {
+    int dp[3][3] = {0};
+
+    for (int i = 1; i <= 2; i++) {
+        for (int j = 1; j <= 2; j++) {
+            dp[i][j] = dp[i - 1][j] ^ dp[i][j - 1] ^ dp[i - 1][j - 1] ^ matrix[i - 1][j - 1];
+        }
+    }
+
+    int count = 0;
+    for (int i = 1; i <= 2; i++) {
+        for (int j = 1; j <= 2; j++) {
+            if (dp[i][j] >= mid)
+                count++;
+        }
+    }
+
+    return count;
+}
+
+int kthLargestValue(int matrix[2][2], int k) {
+    int low = 0, high = 2147483647; // 2147483647 è il massimo valore rappresentabile in C
+
+    while (low < high) {
+        int mid = low + (high - low) / 2;
+        if (countXOR(matrix, mid) >= k)
+            low = mid + 1;
+        else
+            high = mid;
+    }
+
+    return low - 1;
+}
+
+int main() {
+    int matrix[2][2] = {{5, 2}, {1, 6}};
+    int k = 2;
+
+    int result = kthLargestValue(matrix, k);
+
+    printf("Il %do valore più grande è: %d\n", k, result);
+
+    return 0;
+}
+

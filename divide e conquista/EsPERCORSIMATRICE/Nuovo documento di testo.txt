@@ -1,0 +1,46 @@
+#include <stdio.h>
+
+// Funzione ricorsiva per trovare i percorsi
+void findPaths(int m, int n, int row, int col, int path[], int index) {
+    if (row == m - 1) {
+        for (int i = col; i < n; i++) {
+            path[index + i - col] = 1;
+        }
+        for (int i = 0; i < m + n - index - 1; i++) {
+            printf("%d ", path[i]);
+        }
+        printf("\n");
+        return;
+    }
+
+    if (col == n - 1) {
+        for (int i = row; i < m; i++) {
+            path[index + i - row] = 0;
+        }
+        for (int i = 0; i < m + n - index - 1; i++) {
+            printf("%d ", path[i]);
+        }
+        printf("\n");
+        return;
+    }
+
+    path[index] = 1;
+    findPaths(m, n, row + 1, col, path, index + 1);
+
+    path[index] = 0;
+    findPaths(m, n, row, col + 1, path, index + 1);
+}
+
+int main() {
+    int m, n;
+
+    printf("Inserisci il numero di righe (m): ");
+    scanf("%d", &m);
+    printf("Inserisci il numero di colonne (n): ");
+    scanf("%d", &n);
+
+    int path[m + n - 1];
+    findPaths(m, n, 0, 0, path, 0);
+
+    return 0;
+}

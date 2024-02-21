@@ -1,0 +1,45 @@
+//TRACCIA 
+Si implementi un algoritmo seguendo l’approccio Divide et Impera per contare le occorrenze di un
+intero K in un array non ordinato A[]. 
+
+//COMPLESSITÁ: La complessità temporale dell'algoritmo che utilizza l'approccio Divide et Impera per contare le occorrenze di un intero K in un array non ordinato dipende dalla dimensione dell'array n.
+Nel caso peggiore, la complessità temporale è O(n), dove n è la dimensione dell'array. Questo è perché l'algoritmo esamina ogni elemento dell'array una volta.
+Tuttavia, se consideriamo la complessità in termini di T(n), dove n è la dimensione dell'array, la relazione ricorsiva sarebbe:
+T(n) = 2T(n/2) + O(1)
+Questa relazione ricorsiva si verifica perché l'array viene diviso in due parti uguali e l'algoritmo viene richiamato su entrambe le parti.
+Usando il metodo del Master Theorem per risolvere questa relazione, otteniamo T(n) = O(n). Quindi, in termini della dimensione dell'array, l'algoritmo ha una complessità temporale di O(n).
+
+
+#include <stdio.h>
+
+int countOccurrences(int A[], int left, int right, int K) {
+    if (left > right) {
+        return 0;
+    }
+
+    int mid = (left + right) / 2;
+
+    // Divide l'array in due parti e chiama ricorsivamente su entrambe
+    int leftOccurrences = countOccurrences(A, left, mid - 1, K);
+    int rightOccurrences = countOccurrences(A, mid + 1, right, K);
+
+    // Conta le occorrenze nell'array della parte corrente
+    int currentOccurrences = 0;
+    if (A[mid] == K) {
+        currentOccurrences = 1;
+    }
+
+    return leftOccurrences + rightOccurrences + currentOccurrences;
+}
+
+int main() {
+    int A[] = {1, 4, 2, 5, 2, 2, 4, 2, 6};
+    int size = sizeof(A) / sizeof(A[0]);
+    int K = 2;
+
+    int occurrences = countOccurrences(A, 0, size - 1, K);
+
+    printf("Il numero %d compare %d volte nell'array.\n", K, occurrences);
+
+    return 0;
+}

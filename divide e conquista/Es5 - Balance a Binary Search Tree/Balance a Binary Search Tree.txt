@@ -1,0 +1,60 @@
+//APPROCCIO DIVIDE ET IMPERA complessitá O(nlogn) caso medio
+
+//TRACCIA = You are given an integer array nums with no duplicates. A maximum binary tree can be built recursively from nums using the following algorithm:
+
+Create a root node whose value is the maximum value in nums.
+Recursively build the left subtree on the subarray prefix to the left of the maximum value.
+Recursively build the right subtree on the subarray suffix to the right of the maximum value.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definition for a binary tree node
+struct TreeNode {
+    int val;
+    struct TreeNode* left;
+    struct TreeNode* right;
+};
+
+struct TreeNode* newNode(int val) {
+    struct TreeNode* node = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    node->val = val;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+//Mi calcolo il nodo radice partendo dall'input chealtro non é che un array di elementi. La radice la prendo sempre trovando il valore medio e poi richiamo la funzione ricorsivamente a destra e sinistra per i due sottoalberi
+struct TreeNode* sortedArrayToBST(int* nums, int left, int right) {
+    if (left > right) {
+        return NULL;
+    }
+
+    int mid = (left + right) / 2;
+    struct TreeNode* root = newNode(nums[mid]);
+
+    root->left = sortedArrayToBST(nums, left, mid - 1);
+    root->right = sortedArrayToBST(nums, mid + 1, right);
+
+    return root;
+}
+
+void printTree(struct TreeNode* root) {
+    if (root == NULL) {
+        return;
+    }
+
+    printTree(root->left);
+    printf("%d ", root->val);
+    printTree(root->right);
+}
+
+int main() {
+    int nums[] = {1, 2, 3, 4, 5, 6, 7};
+    int size = sizeof(nums) / sizeof(nums[0]);
+
+    struct TreeNode* root = sortedArrayToBST(nums, 0, size - 1);
+
+    printTree(root);
+
+    return 0;
+}
